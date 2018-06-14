@@ -1,9 +1,26 @@
 # The MAME Reinforcement Learning Training Toolkit
-This toolkit has the to potential to train your reinforcement learning algorithm on almost any arcade game. It works as a wrapper around [MAME](http://mamedev.org/) to enable your algorithm to step through gameplay while recieving the frame data and internal memory address values for tracking the games state, along with sending actions to interact with the game.
-
 # PUBLICATION PENDING...
 
 ## About
+This toolkit has the to potential to train your reinforcement learning algorithm on almost any arcade game. It works as a wrapper around [MAME](http://mamedev.org/) to enable your algorithm to step through gameplay while recieving the frame data and internal memory address values for tracking the games state, along with sending actions to interact with the game.
+
+## Street Fighter Random Agent Demo
+The toolkit has currently been applied to Street Fighter III Third Strike: Fight for the Future, which will be will now be demonstrated.
+```python
+import random
+from Main.SF_Environment.Environment import Environment
+
+env = Environment(difficulty=5, frame_ratio=3, frames_per_step=3)
+env.start()
+while True:
+    move_action = random.randint(0, 8)
+    attack_action = random.randint(0, 9)
+    frames, reward, round_done, stage_done = env.step(move_action, attack_action)
+    if stage_done:
+        env.next_game()
+    elif round_done:
+        env.next_round()
+```
 
 ## Example Function Calls
 It doesn't take much to interact with the emulator itself with this toolkit, however the challenge comes from finding the memory address values associated with the internal state you care about, and tracking sais state with your environment class.
@@ -81,24 +98,8 @@ which for street fighter returns a list with all the ports and fields required t
     {'port': ':EXTRA', 'field': 'P1 Short Kick'}
 ]
 ```
+We advise you to create an enum of all the possible actions, then send their action values to the emulator, see [the example Actions Enum](https://github.com/BombayCinema/MAMEToolkit/blob/master/Actions.py)
 
-#### [Example Street Fighter III Third Strike: Fight for the Future Environment Implementation](https://github.com/BombayCinema/MAMEToolkit/blob/master/Environment.py)
-
-## Street Fighter Random Agent Demo
-```python
-import random
-from Main.SF_Environment.Environment import Environment
-
-env = Environment(difficulty=5, frame_ratio=3, frames_per_step=3)
-env.start()
-while True:
-    move_action = random.randint(0, 8)
-    attack_action = random.randint(0, 9)
-    frames, reward, round_done, stage_done = env.step(move_action, attack_action)
-    if stage_done:
-        env.next_game()
-    elif round_done:
-        env.next_round()
-```
+There is also the problem of transitioning games between non-learnable gameplay screens such as the title screen and character select. To see how this can be implemented please look at the provided [Steps script](https://github.com/BombayCinema/MAMEToolkit/blob/master/Steps.py) and the [Example Street Fighter III Third Strike: Fight for the Future Environment Implementation](https://github.com/BombayCinema/MAMEToolkit/blob/master/Environment.py)
 
 ## Library Performance Benchmarks with PC Specs
