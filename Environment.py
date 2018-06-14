@@ -60,12 +60,12 @@ class Environment(object):
     # difficulty - the difficult to be used in story mode gameplay
     # frameRatio, framesPerStep - see Emulator class
     # render, throttle, debug - see Console class
-    def __init__(self, "sfiii3n", difficulty=3, frame_ratio=3, frames_per_step=3, render=True, throttle=False, debug=False):
+    def __init__(self, difficulty=3, frame_ratio=3, frames_per_step=3, render=True, throttle=False, debug=False):
         self.difficulty = difficulty
         self.frame_ratio = frame_ratio
         self.frames_per_step = frames_per_step
         self.throttle = throttle
-        self.emu = Emulator(setup_memory_addresses(), frame_ratio=frame_ratio, render=render, throttle=throttle, debug=debug)
+        self.emu = Emulator("sfiii3n", setup_memory_addresses(), frame_ratio=frame_ratio, render=render, throttle=throttle, debug=debug)
         self.started = False
         self.expected_health = {"P1": 0, "P2": 0}
         self.expected_wins = {"P1": 0, "P2": 0}
