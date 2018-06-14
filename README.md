@@ -9,7 +9,7 @@ This toolkit has the to potential to train your reinforcement learning algorithm
 
 ### [Example Street Fighter III Third Strike: Fight for the Future Implementation](https://github.com/BombayCinema/MAMEToolkit/blob/master/Environment.py)
 
-## Street Fighter stepping demo
+## Street Fighter Random Agent Demo
 ```python
 import random
 from Main.SF_Environment.Environment import Environment
