@@ -1,5 +1,5 @@
-from Main.Emulator.Emulator import Emulator
-from Main.Emulator.Pipes.Address import Address
+from MAMEToolkit import Emulator
+from MAMEToolkit import Address
 from Main.SF_Environment.Steps import *
 from Main.SF_Environment.Actions import Actions
 
