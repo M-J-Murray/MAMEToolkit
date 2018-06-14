@@ -5,12 +5,25 @@ This toolkit has the to potential to train your reinforcement learning algorithm
 
 ## About
 
-## Currently supported on Linux
-
-## Example Street Fighter Code
-
 ## Example Function Calls
 
+### [Example Street Fighter III Third Strike: Fight for the Future Implementation]()
+
 ## Street Fighter stepping demo
+```python
+import random
+from Main.SF_Environment.Environment import Environment
+
+env = Environment(difficulty=5, frame_ratio=3, frames_per_step=3)
+env.start()
+while True:
+    move_action = random.randint(0, 8)
+    attack_action = random.randint(0, 9)
+    frames, reward, round_done, stage_done = env.step(move_action, attack_action)
+    if stage_done:
+        env.next_game()
+    elif round_done:
+        env.next_round()
+```
 
 ## Library Performance Benchmarks with PC Specs
