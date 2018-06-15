@@ -140,7 +140,7 @@ emulator = Emulator("sfiii3n", memory_addresses, frame_ratio=3)
 ```
 
 ## Library Performance Benchmarks with PC Specs
-The development and testing of this toolkit have been completed on an 8-core AMD FX+ CPU along with a 3GB GeForce GTX 1060 GPU.
+The development and testing of this toolkit have been completed on an 8-core AMD FX-8300 3.3GHz CPU along with a 3GB GeForce GTX 1060 GPU.
 With a single random agent, the street fighter environment can be run at 600%+ the normal gameplay speed. And For hogwild training with 8 random agents, the environment can be run at 550%+ the normal gameplay speed.
 
 ## Simple ConvNet Agent
