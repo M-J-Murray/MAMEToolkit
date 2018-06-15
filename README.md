@@ -1,11 +1,11 @@
-# The MAME Reinforcement Learning Algorithm Training Toolkit
+# The MAME RL Algorithm Training Toolkit
 # PUBLICATION PENDING...
 
 ## About
-This Python library has the to potential to train your reinforcement learning algorithm on almost any arcade game on your Linux system. It works as a wrapper around [MAME](http://mamedev.org/) to enable your algorithm to step through gameplay while recieving the frame data and internal memory address values for tracking the games state, along with sending actions to interact with the game.
+This Python library has the to potential to train your reinforcement learning algorithm on almost any arcade game. It is currently available on Linux systems and works as a wrapper around [MAME](http://mamedev.org/). The toolkit allows your algorithm to step through gameplay while recieving the frame data and internal memory address values for tracking the games state, along with sending actions to interact with the game.
 
 ## Street Fighter Random Agent Demo
-The toolkit has currently been applied to Street Fighter III Third Strike: Fight for the Future, but is able to be modified for any game available on MAME. The following demonstrates how a randome agent can be written for the street fighter environment.
+The toolkit has currently been applied to Street Fighter III Third Strike: Fight for the Future, but can modified for any game available on MAME. The following demonstrates how a random agent can be written for a street fighter environment.
 ```python
 import random
 from Main.SF_Environment.Environment import Environment
@@ -52,7 +52,7 @@ def main():
 ![](https://raw.githubusercontent.com/BombayCinema/MAMEToolkit/master/hogwild3.gif "Hogwild Random Agents")
 
 ## Setting Up Your Own Game Environment
-It doesn't take much to interact with the emulator itself with this toolkit, however the challenge comes from finding the memory address values associated with the internal state you care about, and tracking said state with your environment class.
+It doesn't take much to interact with the emulator itself using the toolkit, however the challenge comes from finding the memory address values associated with the internal state you care about, and tracking said state with your environment class.
 The internal memory states of a game can be tracked using the [MAME Cheat Debugger](http://docs.mamedev.org/debugger/cheats.html), which allows you to track how the memory address values of the game change over time.
 To create an emulation of the game you must first have the ROM for the game you are emulating and know the game ID used by MAME, for example for this version of street fighter it is 'sfiii3n'. Once you have these and have determined the memory addresses you wish to track you can start the emulation:
 ```python
@@ -82,7 +82,7 @@ player2_health = data["healthP2"]
 ```
 The step function returns the frame data as a NumPy matrix, along with all of the memory address integer values from that timestep.
 
-To send actions to the emulator you also need to determine which input ports the game supports and along with the fields for each port. For example, with street fighter to insert a coin the following code is required:
+To send actions to the emulator you also need to determine which input ports and fields the game supports. For example, with street fighter to insert a coin the following code is required:
 ```python
 from MAMEToolkit import Action
 
@@ -96,7 +96,7 @@ from MAMEToolkit import list_actions
 game_id = "sfiii3n"
 print(list_actions(game_id))
 ```
-which for street fighter returns a list with all the ports and fields required to perform an action in the step function:
+which for street fighter returns the list with all the ports and fields available for sending actions to the step function:
 ```python
 [
     {'port': ':scsi:1:cdrom:SCSI_ID', 'field': 'SCSI ID'}, 
@@ -132,7 +132,7 @@ We advise you to create an enum of all the possible actions, then send their act
 
 There is also the problem of transitioning games between non-learnable gameplay screens such as the title screen and character select. To see how this can be implemented please look at the provided [Steps script](https://github.com/BombayCinema/MAMEToolkit/blob/master/Steps.py) and the [Example Street Fighter III Third Strike: Fight for the Future Environment Implementation](https://github.com/BombayCinema/MAMEToolkit/blob/master/Environment.py)
 
-The emulator class also supports adjusting the frame rate sent through to your algorithm using the frame_ratio argument. By default MAME generates frames at 60 frames per second, however, this may be too many frames for your algorithm. The toolkit by default will use a frame_ratio of 3, which means that 1 in 3 frames are sent through the toolkit, this converts the frame rate to 20 frames per second. Using a higher frame ratio also increases the performance of the toolkit.
+The emulator class also has a frame_ratio argument which can be used for adjusting the frame rate seen by your algorithm. By default MAME generates frames at 60 frames per second, however, this may be too many frames for your algorithm. The toolkit by default will use a frame_ratio of 3, which means that 1 in 3 frames are sent through the toolkit, this converts the frame rate to 20 frames per second. Using a higher frame_ratio also increases the performance of the toolkit.
 ```Python
 from MAMEToolkit import Emulator
 
@@ -141,10 +141,10 @@ emulator = Emulator("sfiii3n", memory_addresses, frame_ratio=3)
 
 ## Library Performance Benchmarks with PC Specs
 The development and testing of this toolkit have been completed on an 8-core AMD FX+ CPU along with a 3GB GeForce GTX 1060 GPU.
-With a single random agent, the street fighter environment can be run at 600%+ the normal gameplay speed. And For hogwild training with 8 random agents, the environment can be run at 500%+ the normal gameplay speed.
+With a single random agent, the street fighter environment can be run at 600%+ the normal gameplay speed. And For hogwild training with 8 random agents, the environment can be run at 550%+ the normal gameplay speed.
 
 ## Simple ConvNet Agent
-The ensure that the toolkit is able to train algorithms, a simple 5 layer ConvNet was setup with minimal tuning. The algorithm was able to successfully learn some simple mechanics of Street Fighter, such as combos and blocking. The Street Fighter gameplay works by having the player fight different opponents across 10 stages of increasing difficulty. Initially, the algorithm would reach stage 2 on average, but eventually could reach stage 5 on average after 2200 episodes of training. The learning rate was tracked using the net damage done vs damage taken of a single playthough for each episode.
+To ensure that the toolkit is able to train algorithms, a simple 5 layer ConvNet was setup with minimal tuning. The algorithm was able to successfully learn some simple mechanics of Street Fighter, such as combos and blocking. The Street Fighter gameplay works by having the player fight different opponents across 10 stages of increasing difficulty. Initially, the algorithm would reach stage 2 on average, but eventually could reach stage 5 on average after 2200 episodes of training. The learning rate was tracked using the net damage done vs damage taken of a single playthough for each episode.
 
 ![](https://raw.githubusercontent.com/BombayCinema/MAMEToolkit/master/chart.png "ConvNet Results")
 
