@@ -144,7 +144,8 @@ The development and testing of this toolkit have been completed on an 8-core AMD
 With a single random agent, the street fighter environment can be run at 600%+ the normal gameplay speed. And For hogwild training with 8 random agents, the environment can be run at 500%+ the normal gameplay speed.
 
 ## Simple ConvNet Agent
-The ensure that the toolkit is able to train algorithms, a simple 5 layer ConvNet was setup with minimal tuning. The algorithm was able to successfully learn some simple mechanics of Street Fighter, such as combos and blocking. The Street Fighter gameplay works by having the player fight different opponents across 10 stages of increasing difficulty. Initially, the algorithm would reach stage 2 on average, but eventually could reach stage 5 on average after 2200 episodes of training. The learning rate was tracked using the net damage done vs damage taken of a single playthough for each episode. The results can be seen below:
+The ensure that the toolkit is able to train algorithms, a simple 5 layer ConvNet was setup with minimal tuning. The algorithm was able to successfully learn some simple mechanics of Street Fighter, such as combos and blocking. The Street Fighter gameplay works by having the player fight different opponents across 10 stages of increasing difficulty. Initially, the algorithm would reach stage 2 on average, but eventually could reach stage 5 on average after 2200 episodes of training. The learning rate was tracked using the net damage done vs damage taken of a single playthough for each episode.
+
 ![](https://raw.githubusercontent.com/BombayCinema/MAMEToolkit/master/chart.png "ConvNet Results")
 
 
