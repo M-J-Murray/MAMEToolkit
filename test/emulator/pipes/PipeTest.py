@@ -6,6 +6,9 @@ from multiprocessing import set_start_method, Process, Queue as MPQueue
 
 from src.emulator.pipes.Pipe import Pipe
 
+import os
+os.chdir(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
+
 
 def setup_pipe(pipe):
     console = MockConsole(pipe)
@@ -27,10 +30,10 @@ def close_pipes(pipe1, pipe2):
 
 
 def setup_all_pipes():
-    write_pipe = Pipe("env1", "write", 'w', "resources/pipes")
+    write_pipe = Pipe("env1", "write", 'w', "mame/pipes")
     lua_read_pipe = setup_pipe(write_pipe)
 
-    read_pipe = Pipe("env1", "read", 'r', "resources/pipes")
+    read_pipe = Pipe("env1", "read", 'r', "mame/pipes")
     lua_write_pipe = setup_pipe(read_pipe)
 
     return write_pipe, lua_read_pipe, read_pipe, lua_write_pipe
@@ -39,7 +42,7 @@ def setup_all_pipes():
 def run_write(output_queue):
     write_pipe, lua_read_pipe = [None] * 2
     try:
-        write_pipe = Pipe("env1", "write", 'w', "resources/pipes")
+        write_pipe = Pipe("env1", "write", 'w', "mame/pipes")
         lua_read_pipe = setup_pipe(write_pipe)
 
         write_pipe.writeln("test")
@@ -51,7 +54,7 @@ def run_write(output_queue):
 def run_read(output_queue):
     read_pipe, lua_write_pipe = [None] * 2
     try:
-        read_pipe = Pipe("env1", "read", 'r', "resources/pipes")
+        read_pipe = Pipe("env1", "read", 'r', "mame/pipes")
         lua_write_pipe = setup_pipe(read_pipe)
 
         lua_write_pipe.write("test\n")
@@ -84,7 +87,7 @@ class PipeTest(unittest.TestCase):
     def test_write(self):
         write_pipe, lua_read_pipe = [None] * 2
         try:
-            write_pipe = Pipe("env1", "write", 'w', "resources/pipes")
+            write_pipe = Pipe("env1", "write", 'w', "mame/pipes")
             lua_read_pipe = setup_pipe(write_pipe)
 
             write_pipe.writeln("test")
@@ -95,7 +98,7 @@ class PipeTest(unittest.TestCase):
     def test_read(self):
         read_pipe, lua_write_pipe = [None] * 2
         try:
-            read_pipe = Pipe("env1", "read", 'r', "resources/pipes")
+            read_pipe = Pipe("env1", "read", 'r', "mame/pipes")
             lua_write_pipe = setup_pipe(read_pipe)
 
             lua_write_pipe.write("test\n")
@@ -107,7 +110,7 @@ class PipeTest(unittest.TestCase):
     def test_readln_empty(self):
         read_pipe, lua_write_pipe = [None] * 2
         try:
-            read_pipe = Pipe("env1", "read", 'r', "resources/pipes")
+            read_pipe = Pipe("env1", "read", 'r', "mame/pipes")
             lua_write_pipe = setup_pipe(read_pipe)
 
             with self.assertRaises(IOError) as context:
@@ -120,13 +123,13 @@ class PipeTest(unittest.TestCase):
     def test_read_from_write_pipe(self):
         write_pipe, lua_read_pipe = [None] * 2
         try:
-            write_pipe = Pipe("env1", "write", 'w', "resources/pipes")
+            write_pipe = Pipe("env1", "write", 'w', "mame/pipes")
             lua_read_pipe = setup_pipe(write_pipe)
 
             with self.assertRaises(IOError) as context:
                 write_pipe.readln()
 
-            assert_that(str(context.exception), contains_string("Attempted to read from '/home/michael/dev/fyp/sfiii3Agent/Python/resources/pipes/env1-write.pipe' in 'w' mode"))
+            assert_that(str(context.exception), contains_string("Attempted to read from '/home/michael/dev/MAMEToolkit/test/emulator/mame/pipes/write-env1.pipe' in 'w' mode"))
 
         finally:
             close_pipes(write_pipe, lua_read_pipe)
@@ -134,13 +137,13 @@ class PipeTest(unittest.TestCase):
     def test_write_to_read_pipe(self):
         read_pipe, lua_write_pipe = [None] * 2
         try:
-            read_pipe = Pipe("env1", "read", 'r', "resources/pipes")
+            read_pipe = Pipe("env1", "read", 'r', "mame/pipes")
             lua_write_pipe = setup_pipe(read_pipe)
 
             with self.assertRaises(IOError) as context:
                 read_pipe.writeln("TEST")
 
-            assert_that(str(context.exception), contains_string("Attempted to write to '/home/michael/dev/fyp/sfiii3Agent/Python/resources/pipes/env1-read.pipe' in 'r' mode"))
+            assert_that(str(context.exception), contains_string("Attempted to write to '/home/michael/dev/MAMEToolkit/test/emulator/mame/pipes/read-env1.pipe' in 'r' mode"))
 
         finally:
             close_pipes(read_pipe, lua_write_pipe)

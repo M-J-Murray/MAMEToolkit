@@ -72,6 +72,9 @@ class Pipe(object):
             error = "Failed to open pipe '" + str(self.path.absolute()) + "'"
             self.logger.error(error)
             raise IOError(error)
+
+    def close(self):
+        self.fifo.close()
     
     # Writes to the pipe
     def writeln(self, line):

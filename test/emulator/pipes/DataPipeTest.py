@@ -30,7 +30,7 @@ def close_pipes(pipe1, pipe2):
 def run_read(output_pipe):
     addresses = {"test1": Address("0x00000000", "u8"), "test2": Address("0x00000001", "u16")}
     screen_dims = {"width": 1, "height": 1}
-    data_pipe = DataPipe("env1", screen_dims, addresses, "resources/pipes")
+    data_pipe = DataPipe("env1", screen_dims, addresses, "../mame/pipes")
     write_pipe = setup_data_pipe(data_pipe)
     write_pipe.write("1+2+abc\n")
     write_pipe.flush()
@@ -59,12 +59,12 @@ class DataPipeTest(unittest.TestCase):
         try:
             addresses = {"test1": Address("0x00000000", "u8"), "test2": Address("0x00000001", "u16")}
             screen_dims = {"width": 1, "height": 1}
-            data_pipe = DataPipe("env1", screen_dims, addresses, "resources/pipes")
+            data_pipe = DataPipe("env1", screen_dims, addresses, "../mame/pipes")
             write_pipe = setup_data_pipe(data_pipe)
             write_pipe.write("1+2+abc\n")
             write_pipe.flush()
 
-            assert_that(data_pipe.get_lua_string(), equal_to('dataPipe:write(manager:machine().devices[":maincpu"].spaces["program"]:read_u8(0x00000000).."+"..manager:machine().devices[":maincpu"].spaces["program"]:read_u16(0x00000001).."+"..manager:machine().screens[":screen"]:bitmap_binary().."\\n"); dataPipe:flush(); '))
+            assert_that(data_pipe.get_lua_string(), equal_to('dataPipe:write(mem:read_u8(0x00000000).."+"..mem:read_u16(0x00000001).."+"..s:bitmap_binary().."\\n"); dataPipe:flush(); '))
         finally:
             close_pipes(data_pipe, write_pipe)
 
@@ -73,7 +73,7 @@ class DataPipeTest(unittest.TestCase):
         try:
             addresses = {"test1": Address("0x00000000", "u8"), "test2": Address("0x00000001", "u16")}
             screen_dims = {"width": 1, "height": 1}
-            data_pipe = DataPipe("env1", screen_dims, addresses, "resources/pipes")
+            data_pipe = DataPipe("env1", screen_dims, addresses, "../mame/pipes")
             write_pipe = setup_data_pipe(data_pipe)
             write_pipe.write("1+2+abc\n")
             write_pipe.flush()

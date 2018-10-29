@@ -52,7 +52,7 @@ class StreamGobblerTest(unittest.TestCase):
 
     def test_multiprocessing(self):
         set_start_method("spawn")
-        workers = 10
+        workers = 2
         lines = [b"test1\n", b"test2\n", b"test3\n"]
         output_queue = Queue()
         processes = [Process(target=run_gobbler, args=[lines, output_queue]) for i in range(workers)]

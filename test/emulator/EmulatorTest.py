@@ -6,10 +6,10 @@ from src.emulator.pipes.Address import Address
 from multiprocessing import set_start_method, Process, Queue
 
 
-def run_emulator(game_id, memory_addresses, output_queue):
+def run_emulator(env_id, game_id, memory_addresses, output_queue):
     emulator = None
     try:
-        emulator = Emulator(game_id, memory_addresses)
+        emulator = Emulator(env_id, game_id, memory_addresses)
         output_queue.put(emulator.step([]))
     finally:
         emulator.close()
@@ -22,9 +22,9 @@ class EmulatorTest(unittest.TestCase):
         game_id = "sfiii3n"
         emulator = None
         try:
-            emulator = Emulator(game_id, memory_addresses)
-            assert_that(self.emulator.screenDims["width"], equal_to(384))
-            assert_that(self.emulator.screenDims["height"], equal_to(224))
+            emulator = Emulator("testEnv1", game_id, memory_addresses)
+            assert_that(emulator.screenDims["width"], equal_to(384))
+            assert_that(emulator.screenDims["height"], equal_to(224))
         finally:
             emulator.close()
 
@@ -33,8 +33,8 @@ class EmulatorTest(unittest.TestCase):
         game_id = "sfiii3n"
         emulator = None
         try:
-            emulator = Emulator(game_id, memory_addresses)
-            data = self.emulator.step([])
+            emulator = Emulator("testEnv1", game_id, memory_addresses)
+            data = emulator.step([])
             assert_that(data["frame"].shape, equal_to((224, 384, 3)))
             assert_that(data["test"], equal_to(0))
         finally:
@@ -46,7 +46,7 @@ class EmulatorTest(unittest.TestCase):
         game_id = "sfiii3n"
         memory_addresses = {"test": Address("02000008", "u8")}
         output_queue = Queue()
-        processes = [Process(target=run_emulator, args=[game_id, memory_addresses, output_queue]) for i in range(workers)]
+        processes = [Process(target=run_emulator, args=[f"testEnv{i}", game_id, memory_addresses, output_queue]) for i in range(workers)]
         [process.start() for process in processes]
         [process.join() for process in processes]
         for i in range(workers):
