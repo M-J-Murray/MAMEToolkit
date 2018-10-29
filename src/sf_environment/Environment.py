@@ -1,7 +1,7 @@
-from MAMEToolkit import Emulator
-from MAMEToolkit import Address
-from Main.SF_Environment.Steps import *
-from Main.SF_Environment.Actions import Actions
+from src.emulator.Emulator import Emulator
+from src.emulator.pipes.Address import Address
+from src.sf_environment.Steps import *
+from src.sf_environment.Actions import Actions
 
 
 # Combines the data of multiple time steps
@@ -16,11 +16,11 @@ def add_rewards(old_data, new_data):
 # Returns the list of memory addresses required to train on Street Fighter
 def setup_memory_addresses():
     return {
-        "fighting": Address('0x0200EE44', 'u8'),
+        "fighting": Address('0x02011389', 'u8'),
         "winsP1": Address('0x02011383', 'u8'),
         "winsP2": Address('0x02011385', 'u8'),
-        "healthP1": Address('0x02068D0B', 's8'),
-        "healthP2": Address('0x020691A3', 's8')
+        "healthP1": Address('0x02068D0A', 's16'),
+        "healthP2": Address('0x020691A2', 's16')
     }
 
 
@@ -57,21 +57,22 @@ def index_to_attack_action(action):
 
 # The Street Fighter specific interface for training an agent against the game
 class Environment(object):
-    
+
     # difficulty - the difficult to be used in story mode gameplay
-    # frameRatio, framesPerStep - see Emulator class
+    # frameRatio, framesPerStep - see emulator class
     # render, throttle, debug - see Console class
-    def __init__(self, difficulty=3, frame_ratio=3, frames_per_step=3, render=True, throttle=False, debug=False):
+    def __init__(self, env_id, difficulty=3, frame_ratio=2, frames_per_step=3, render=True, throttle=False, debug=False):
         self.difficulty = difficulty
         self.frame_ratio = frame_ratio
         self.frames_per_step = frames_per_step
         self.throttle = throttle
-        self.emu = Emulator("sfiii3n", setup_memory_addresses(), frame_ratio=frame_ratio, render=render, throttle=throttle, debug=debug)
+        self.emu = Emulator(env_id, "sfiii3n", setup_memory_addresses(), frame_ratio=frame_ratio, render=render, throttle=throttle, debug=debug)
         self.started = False
         self.expected_health = {"P1": 0, "P2": 0}
         self.expected_wins = {"P1": 0, "P2": 0}
-        self.roundDone = False
-        self.gameDone = False
+        self.round_done = False
+        self.stage_done = False
+        self.game_done = False
         self.stage = 1
 
     # Runs a set of action steps over a series of time steps
@@ -91,48 +92,57 @@ class Environment(object):
                 self.emu.step([])
         self.run_steps(set_difficulty(self.frame_ratio, self.difficulty))
         self.run_steps(start_game(self.frame_ratio))
-        frames = self.wait_for_fight_start(True)
+        frames = self.wait_for_fight_start()
         self.started = True
         return frames
 
     # Observes the game and waits for the fight to start
-    def wait_for_fight_start(self, is_new_game):
-        delay = int(234 / self.frame_ratio) if is_new_game else 0
+    def wait_for_fight_start(self):
         data = self.emu.step([])
         while data["fighting"] == 0:
-            data = self.emu.step([])
-        for i in range(delay):
             data = self.emu.step([])
         self.expected_health = {"P1": data["healthP1"], "P2": data["healthP2"]}
         data = self.gather_frames([])
         return data["frame"]
-    
+
+    def reset(self):
+        if self.game_done:
+            return self.new_game()
+        elif self.stage_done:
+            return self.next_stage()
+        elif self.round_done:
+            return self.next_round()
+        else:
+            raise EnvironmentError("Reset called while gameplay still running")
+
     # To be called when a round finishes
     # Performs the necessary steps to take the agent to the next round of gameplay
     def next_round(self):
-        if self.gameDone:
-            return self.next_game()
-        self.roundDone = False
-        return self.wait_for_fight_start(False)
+        self.round_done = False
+        self.expected_health = {"P1": 0, "P2": 0}
+        return self.wait_for_fight_start()
 
     # To be called when a game finishes
     # Performs the necessary steps to take the agent(s) to the next game and resets the necessary book keeping variables
-    def next_game(self):
-        wins = self.wait_for_continue()
-        if wins["P1"] == 2:
-            self.stage += 1
-            if self.stage == 11:
-                self.stage = 1
-        elif wins["P2"] == 2:
-            self.stage = 1
-        else:
-            raise RuntimeError("Environment attempted to reset while player wins on "+str(wins))
-        self.run_steps(reset_game(self.frame_ratio, wins))
-
+    def next_stage(self):
+        self.wait_for_continue()
+        self.run_steps(next_stage(self.frame_ratio))
+        self.expected_health = {"P1": 0, "P2": 0}
         self.expected_wins = {"P1": 0, "P2": 0}
-        self.roundDone = False
-        self.gameDone = False
-        return self.wait_for_fight_start(True)
+        self.round_done = False
+        self.stage_done = False
+        return self.wait_for_fight_start()
+
+    def new_game(self):
+        self.wait_for_continue()
+        self.run_steps(new_game(self.frame_ratio))
+        self.expected_health = {"P1": 0, "P2": 0}
+        self.expected_wins = {"P1": 0, "P2": 0}
+        self.round_done = False
+        self.stage_done = False
+        self.game_done = False
+        self.stage = 1
+        return self.wait_for_fight_start()
 
     # Steps the emulator along until the screen goes black at the very end of a game
     def wait_for_continue(self):
@@ -143,7 +153,6 @@ class Environment(object):
         else:
             while data["frame"][0].sum() != 0:
                 data = self.emu.step([])
-        return {"P1": data["winsP1"], "P2": data["winsP2"]}
 
     # Steps the emulator along until the round is definitely over
     def run_till_victor(self, data):
@@ -156,9 +165,12 @@ class Environment(object):
     def check_done(self, data):
         if data["fighting"] == 0:
             data = self.run_till_victor(data)
-            self.roundDone = True
-            if data["winsP1"] == 2 or data["winsP2"] == 2:
-                self.gameDone = True      
+            self.round_done = True
+            if data["winsP1"] == 2:
+                self.stage_done = True
+                self.stage += 1
+            if data["winsP2"] == 2:
+                self.game_done = True
         return data
 
     # Collects the specified amount of frames the agent requires before choosing an action
@@ -191,13 +203,13 @@ class Environment(object):
     # Steps the emulator along by the requested amount of frames required for the agent to provide actions
     def step(self, move_action, attack_action):
         if self.started:
-            if not self.roundDone and not self.gameDone:
+            if not self.round_done and not self.stage_done and not self.game_done:
                 actions = []
                 actions += index_to_move_action(move_action)
                 actions += index_to_attack_action(attack_action)
                 data = self.gather_frames(actions)
                 data = self.check_done(data)
-                return data["frame"], data["rewards"], self.roundDone, self.gameDone
+                return data["frame"], data["rewards"], self.round_done, self.stage_done, self.game_done
             else:
                 raise EnvironmentError("Attempted to step while characters are not fighting")
         else:
