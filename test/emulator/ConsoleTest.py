@@ -2,13 +2,13 @@ import unittest
 from hamcrest import *
 from time import sleep
 from multiprocessing import set_start_method, Process, Queue
-from src.emulator.Console import Console
+from MAMEToolkit.emulator.Console import Console
 
 
 def run_console(game_id, output_queue):
     console = None
     try:
-        console = Console(game_id)
+        console = Console("MAMEToolkit/emulator/mame/roms", game_id)
         sleep(5)
         console.writeln('s = manager:machine().screens[":screen"]')
         output = console.writeln('print(s:width())', expect_output=True)
@@ -23,7 +23,7 @@ class ConsoleTest(unittest.TestCase):
         game_id = "sfiii3n"
         console = None
         try:
-            console = Console(game_id)
+            console = Console("/home/michael/dev/MAMEToolkit/MAMEToolkit/emulator/mame/roms", game_id)
             sleep(5)
             console.writeln('s = manager:machine().screens[":screen"]')
             output = console.writeln('print(s:width())', expect_output=True)

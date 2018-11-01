@@ -1,6 +1,6 @@
 import unittest
 from hamcrest import *
-from src.emulator.pipes.Address import Address
+from MAMEToolkit.emulator.Address import Address
 
 
 class AddressTest(unittest.TestCase):

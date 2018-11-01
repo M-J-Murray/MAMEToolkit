@@ -1,5 +1,5 @@
 import os
-from src.emulator.StreamGobbler import StreamGobbler
+from MAMEToolkit.emulator.StreamGobbler import StreamGobbler
 from pathlib import Path
 from queue import Queue
 from threading import Thread
@@ -25,11 +25,13 @@ class Pipe(object):
     def __init__(self, env_id, pipe_id, mode, pipes_path):
         self.pipeId = pipe_id + "Pipe"
         self.mode = mode
-        self.pipes_path = pipes_path
-        self.path = Path(pipes_path + "/" + pipe_id + "-" + str(env_id) + ".pipe")
+        self.pipes_path = Path(pipes_path)
+        if not self.pipes_path.exists():
+            self.pipes_path.mkdir()
+        self.path = self.pipes_path.joinpath(Path(pipe_id + "-" + str(env_id) + ".pipe"))
         self.logger = logging.getLogger("Pipe: "+str(self.path.absolute()))
         if self.path.exists():
-            os.remove(str(self.path.absolute()))
+            self.path.unlink()
         os.mkfifo(str(self.path.absolute()))
         self.logger.info("Created pipe file")
 

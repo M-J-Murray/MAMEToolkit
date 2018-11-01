@@ -1,0 +1,3 @@
+include MAMEToolkit/emulator/pipes/*
+include MAMEToolkit/emulator/mame/mame
+recursive-include MAMEToolkit/emulator/mame/plugins/ *

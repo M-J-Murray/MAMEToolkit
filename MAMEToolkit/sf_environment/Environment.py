@@ -1,7 +1,7 @@
-from src.emulator.Emulator import Emulator
-from src.emulator.pipes.Address import Address
-from src.sf_environment.Steps import *
-from src.sf_environment.Actions import Actions
+from MAMEToolkit.emulator.Emulator import Emulator
+from MAMEToolkit.emulator.Address import Address
+from MAMEToolkit.sf_environment.Steps import *
+from MAMEToolkit.sf_environment.Actions import Actions
 
 
 # Combines the data of multiple time steps
@@ -58,15 +58,16 @@ def index_to_attack_action(action):
 # The Street Fighter specific interface for training an agent against the game
 class Environment(object):
 
+    # env_id - the unique identifier of the emulator environment, used to create fifo pipes
     # difficulty - the difficult to be used in story mode gameplay
-    # frameRatio, framesPerStep - see emulator class
+    # frame_ratio, frames_per_step - see Emulator class
     # render, throttle, debug - see Console class
-    def __init__(self, env_id, difficulty=3, frame_ratio=2, frames_per_step=3, render=True, throttle=False, debug=False):
+    def __init__(self, env_id, roms_path, difficulty=3, frame_ratio=3, frames_per_step=3, render=True, throttle=False, debug=False):
         self.difficulty = difficulty
         self.frame_ratio = frame_ratio
         self.frames_per_step = frames_per_step
         self.throttle = throttle
-        self.emu = Emulator(env_id, "sfiii3n", setup_memory_addresses(), frame_ratio=frame_ratio, render=render, throttle=throttle, debug=debug)
+        self.emu = Emulator(env_id, roms_path, "sfiii3n", setup_memory_addresses(), frame_ratio=frame_ratio, render=render, throttle=throttle, debug=debug)
         self.started = False
         self.expected_health = {"P1": 0, "P2": 0}
         self.expected_wins = {"P1": 0, "P2": 0}

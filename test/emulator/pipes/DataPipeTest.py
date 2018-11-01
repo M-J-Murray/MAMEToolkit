@@ -3,8 +3,8 @@ from hamcrest import *
 from threading import Thread
 from queue import Queue as DefaultQueue
 
-from src.emulator.pipes.DataPipe import DataPipe
-from src.emulator.pipes.Address import Address
+from MAMEToolkit.emulator.pipes.DataPipe import DataPipe
+from MAMEToolkit.emulator.Address import Address
 from multiprocessing import set_start_method, Process, Queue as MPQueue
 
 

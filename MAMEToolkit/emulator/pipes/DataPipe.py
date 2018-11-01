@@ -1,5 +1,5 @@
 import numpy as np
-from src.emulator.pipes.Pipe import Pipe
+from MAMEToolkit.emulator.pipes.Pipe import Pipe
 
 
 # A special implementation of a Linux FIFO pipe which is used for reading all of the frame data and memory address values from the emulator

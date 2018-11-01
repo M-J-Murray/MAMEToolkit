@@ -1,6 +1,7 @@
 import os
+from pathlib import Path
 from subprocess import Popen, PIPE
-from src.emulator.StreamGobbler import StreamGobbler
+from MAMEToolkit.emulator.StreamGobbler import StreamGobbler
 import queue
 import logging
 
@@ -13,10 +14,10 @@ class Console(object):
     # render is for displaying the frames to the emulator window, disabling it has little to no effect
     # throttle enabled will run any game at the intended gameplay speed, disabling it will run the game as fast as the computer can handle
     # debug enabled will print everything that comes out of the Lua engine console
-    def __init__(self, game_id, render=True, throttle=False, debug=False):
+    def __init__(self, roms_path, game_id, render=True, throttle=False, debug=False):
         self.logger = logging.getLogger("Console")
 
-        command = "exec ./mame -rompath roms -pluginspath plugins -skip_gameinfo -sound none -console "+game_id
+        command = f"exec ./mame -rompath '{str(Path(roms_path).absolute())}' -pluginspath plugins -skip_gameinfo -sound none -console "+game_id
         if not render:
             command += " -video none"
         if throttle:

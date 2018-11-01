@@ -4,7 +4,7 @@ from threading import Thread
 from queue import Queue as DefaultQueue
 from multiprocessing import set_start_method, Process, Queue as MPQueue
 
-from src.emulator.pipes.Pipe import Pipe
+from MAMEToolkit.emulator.pipes.Pipe import Pipe
 
 import os
 os.chdir(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))

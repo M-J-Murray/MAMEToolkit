@@ -1,6 +1,6 @@
 import unittest
 from hamcrest import *
-from src.emulator.StreamGobbler import StreamGobbler
+from MAMEToolkit.emulator.StreamGobbler import StreamGobbler
 from multiprocessing import set_start_method, Process, Queue
 import queue
 
