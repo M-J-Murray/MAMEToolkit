@@ -159,9 +159,9 @@ which for street fighter returns the list with all the ports and fields availabl
     {'port': ':EXTRA', 'field': 'P1 Short Kick'}
 ]
 ```
-We advise you to create an enum of all the possible actions, then send their action values to the emulator, see [the example Actions Enum](https://github.com/BombayCinema/MAMEToolkit/blob/master/Actions.py)
+We advise you to create an enum of all the possible actions, then send their action values to the emulator, see [the example Actions Enum](MAMEToolkit/sf_environment/Actions.py)
 
-There is also the problem of transitioning games between non-learnable gameplay screens such as the title screen and character select. To see how this can be implemented please look at the provided [Steps script](https://github.com/BombayCinema/MAMEToolkit/blob/master/Steps.py) and the [Example Street Fighter III Third Strike: Fight for the Future Environment Implementation](https://github.com/BombayCinema/MAMEToolkit/blob/master/Environment.py)
+There is also the problem of transitioning games between non-learnable gameplay screens such as the title screen and character select. To see how this can be implemented please look at the provided [Steps script](MAMEToolkit/sf_environment/Steps.py) and the [Example Street Fighter III Third Strike: Fight for the Future Environment Implementation](MAMEToolkit/sf_environment/Environment.py)
 
 The emulator class also has a frame_ratio argument which can be used for adjusting the frame rate seen by your algorithm. By default MAME generates frames at 60 frames per second, however, this may be too many frames for your algorithm. The toolkit by default will use a frame_ratio of 3, which means that 1 in 3 frames are sent through the toolkit, this converts the frame rate to 20 frames per second. Using a higher frame_ratio also increases the performance of the toolkit.
 ```Python

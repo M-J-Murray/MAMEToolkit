@@ -2,3 +2,6 @@
 *__pycache__*
 MAMEToolkit/emulator/mame/roms/sfiii3n.zip
 MAMEToolkit/emulator/mame/mame
+dist
+MAMEToolkit-**
+MAMEToolkit.egg-info
