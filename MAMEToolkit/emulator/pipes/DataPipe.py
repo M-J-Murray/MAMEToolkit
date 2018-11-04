@@ -1,13 +1,15 @@
 import numpy as np
 from MAMEToolkit.emulator.pipes.Pipe import Pipe
+from MAMEToolkit.emulator.BitmapFormat import BitmapFormat
 
 
 # A special implementation of a Linux FIFO pipe which is used for reading all of the frame data and memory address values from the emulator
 class DataPipe(object):
 
-    def __init__(self, env_id, screen_dims, addresses, pipes_path):
+    def __init__(self, env_id, screen_dims, bitmap_format: BitmapFormat, addresses, pipes_path):
         self.pipe = Pipe(env_id, "data", 'r', pipes_path)
         self.screenDims = screen_dims
+        self.bitmap_format = bitmap_format
         self.addresses = addresses
 
     def open(self, console):
@@ -31,6 +33,6 @@ class DataPipe(object):
             part = line[cursor:cursor_end]
             data[k] = int(part.decode("utf-8"))
             cursor = cursor_end+1
-        data["frame"] = np.frombuffer(line[cursor:], dtype='uint8').reshape(self.screenDims["height"], self.screenDims["width"], 3)
+        data["frame"] = np.frombuffer(line[cursor:], dtype='uint8').reshape(self.screenDims["height"], self.screenDims["width"], self.bitmap_format.value)
         return data
 

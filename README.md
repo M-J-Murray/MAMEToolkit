@@ -11,13 +11,15 @@ pip install MAMEToolkit
 
 **DISCLAIMER: We are unable to provide you with any game ROMs. It is the users own legal responsibility to acquire a game ROM for emulation. This library should only be used for non-commercial research purposes.**
 
+There are some free ROMs available at: [https://www.mamedev.org/roms/]
+
 ## Street Fighter Random Agent Demo
 The toolkit has currently been applied to Street Fighter III Third Strike: Fight for the Future (Japan 990608, NO CD), but can modified for any game available on MAME. The following demonstrates how a random agent can be written for a street fighter environment.
 ```python
 import random
 from MAMEToolkit.sf_environment import Environment
 
-roms_path = "roms/"
+roms_path = "roms/"  # Replace this with the path to your ROMs
 env = Environment("env1", roms_path)
 env.start()
 while True:
@@ -56,7 +58,7 @@ def run_env(env):
 def main():
     workers = 8
     # Environments must be created outside of the threads
-    roms_path = "roms/"
+    roms_path = "roms/"  # Replace this with the path to your ROMs
     envs = [Environment(f"env{i}", roms_path) for i in range(workers)]
     threads = [Thread(target=run_env, args=(envs[i], )) for i in range(workers)]
     [thread.start() for thread in threads]
@@ -65,25 +67,37 @@ def main():
 ![](pics/hogwild3.gif "Hogwild Random Agents")
 
 ## Setting Up Your Own Game Environment
-It doesn't take much to interact with the emulator itself using the toolkit, however the challenge comes from finding the memory address values associated with the internal state you care about, and tracking said state with your environment class.
-The internal memory states of a game can be tracked using the [MAME Cheat Debugger](http://docs.mamedev.org/debugger/cheats.html), which allows you to track how the memory address values of the game change over time.
-To create an emulation of the game you must first have the ROM for the game you are emulating and know the game ID used by MAME, for example for this version of street fighter it is 'sfiii3n'. 
 
 **Game ID's**<br>
+To create an emulation of the game you must first have the ROM for the game you are emulating and know the game ID used by MAME, for example for this version of street fighter it is 'sfiii3n'. 
 The id of your game can be found by running:
 ```python
-from MAMEToolkit.emulator import Emulator
-emulator = Emulator("env1", "", "", memory_addresses)
+from MAMEToolkit.emulator import see_games
+see_games()
 ```
 This will bring up the MAME emulator. You can search through the list of games to find the one you want. The id of the game is always in brackets at the end of the game title.
 
 **Memory Addresses**<br>
-Once you have these and have determined the memory addresses you wish to track you can start the emulation:
+It doesn't take much to interact with the emulator itself using the toolkit, however the challenge comes from finding the memory address values associated with the internal state you care about, and tracking said state with your environment class.
+The internal memory states of a game can be tracked using the [MAME Cheat Debugger](http://docs.mamedev.org/debugger/cheats.html), which allows you to track how the memory address values of the game change over time.
+
+
+The cheat debugger can be run using the following:
+```python
+from MAMEToolkit.emulator import run_cheat_debugger
+roms_path = "roms/" # Replace this with the path to your ROMs
+game_id = "sfiii3n"
+run_cheat_debugger(roms_path, game_id)
+```
+For information about using the debugger, see the Memory dump section of this tutorial [https://www.dorkbotpdx.org/blog/skinny/use_mames_debugger_to_reverse_engineer_and_extend_old_games]
+
+
+Once you have determined the memory addresses you wish to track you can start the emulation using:
 ```python
 from MAMEToolkit.emulator import Emulator
 from MAMEToolkit.emulator import Address
 
-roms_path = "roms/"
+roms_path = "roms/"  # Replace this with the path to your ROMs
 game_id = "sfiii3n"
 memory_addresses = {
         "fighting": Address('0x0200EE44', 'u8'),
@@ -95,7 +109,7 @@ memory_addresses = {
     
 emulator = Emulator("env1", roms_path, "sfiii3n", memory_addresses)
 ```
-This will immediately start the emulation and halt it when it toolkit has linked to the emulator process. 
+This will immediately start the emulation and halt it when the toolkit has linked to the emulator process. 
 
 **Stepping the emulator**<br>
 Once the toolkit is linked, you can step the emulator along using the step function:
@@ -123,7 +137,7 @@ To identify which ports are availble use the list actions command:
 ```python
 from MAMEToolkit.emulator import list_actions
 
-roms_path = "roms/"
+roms_path = "roms/"  # Replace this with the path to your ROMs
 game_id = "sfiii3n"
 print(list_actions(roms_path, game_id))
 ```
@@ -178,5 +192,23 @@ With a single random agent, the street fighter environment can be run at 600%+ t
 To ensure that the toolkit is able to train algorithms, a simple 5 layer ConvNet was setup with minimal tuning. The algorithm was able to successfully learn some simple mechanics of Street Fighter, such as combos and blocking. The Street Fighter gameplay works by having the player fight different opponents across 10 stages of increasing difficulty. Initially, the algorithm would reach stage 2 on average, but eventually could reach stage 5 on average after 2200 episodes of training. The learning rate was tracked using the net damage done vs damage taken of a single playthough for each episode.
 
 ![](pics/chart.png "ConvNet Results")
+
+## MAME Changes
+The library works by acting as a wrapper around a modified MAME implementation.
+The following changes were made:
+* Updated the lua console to allow for the retrieval of the format of frame data
+* Update the lua console to allow for the retrieval of the current frames data
+* Disabled game start warnings
+
+The following files are affected:
+* src/emu/machine.cpp
+* src/emu/video.cpp
+* src/emu/video.h
+* src/frontend/mame/luaengine.cpp
+* src/frontend/mame/ui/ui.cpp
+* src/osd/sdl/window.cpp
+
+**The modified MAME implementation can be found at [https://github.com/M-J-Murray/mame]**
+
 
 

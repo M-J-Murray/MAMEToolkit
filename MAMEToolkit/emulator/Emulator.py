@@ -3,6 +3,7 @@ import os
 from MAMEToolkit.emulator.Console import Console
 from MAMEToolkit.emulator.pipes.Pipe import Pipe
 from MAMEToolkit.emulator.pipes.DataPipe import DataPipe
+from MAMEToolkit.emulator.BitmapFormat import BitmapFormat
 
 
 # Converts a list of action Enums into the relevant Lua engine representation
@@ -24,6 +25,14 @@ def list_actions(roms_path, game_id):
     return actions
 
 
+def see_games():
+    Emulator("env1", "", "", {})
+
+
+def run_cheat_debugger(roms_path, game_id):
+    Console(roms_path, game_id, cheat_debugger=True, render=True, throttle=True, debug=True)
+
+
 # An interface for using the Lua engine console functionality
 class Emulator(object):
 
@@ -41,6 +50,7 @@ class Emulator(object):
         atexit.register(self.close)
         self.wait_for_resource_registration()
         self.create_lua_variables()
+        bitmap_format = self.get_bitmap_format()
         screen_width = self.setup_screen_width()
         screen_height = self.setup_screen_height()
         self.screenDims = {"width": screen_width, "height": screen_height}
@@ -50,11 +60,24 @@ class Emulator(object):
         self.actionPipe = Pipe(env_id, "action", 'w', pipes_path)
         self.actionPipe.open(self.console)
 
-        self.dataPipe = DataPipe(env_id, self.screenDims, memory_addresses, pipes_path)
+        self.dataPipe = DataPipe(env_id, self.screenDims, bitmap_format, memory_addresses, pipes_path)
         self.dataPipe.open(self.console)
 
         # Connect inter process communication
         self.setup_frame_access_loop()
+
+    def get_bitmap_format(self):
+        bitmap_format = self.console.writeln('print(s:bitmap_format())', expect_output=True)
+        if len(bitmap_format) != 1:
+            raise IOError('Expected one result from "print(s:bitmap_format())", but received: ', bitmap_format)
+        try:
+            return {
+                "RGB32 - 32bpp 8-8-8 RGB": BitmapFormat.RGB32,
+                "ARGB32 - 32bpp 8-8-8-8 ARGB": BitmapFormat.ARGB32
+            }[bitmap_format[0]]
+        except KeyError:
+            self.console.close()
+            raise EnvironmentError("MAMEToolkit only supports RGB32 and ARGB32 frame bit format games")
 
     def create_lua_variables(self):
         self.console.writeln('iop = manager:machine():ioport()')
