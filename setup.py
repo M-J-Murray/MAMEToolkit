@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name="MAMEToolkit",
-    version="1.0.0",
+    version="1.0.1",
     author="Michael Murray",
     author_email="m.j.murray123@gmail.com",
     description="A library to train your RL algorithms against MAME arcade games on Linux",

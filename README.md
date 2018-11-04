@@ -35,13 +35,14 @@ while True:
 ```
 
 The toolkit also supports hogwild training:
-```Python
-from threading import Thread
+```python
+from multiprocessing import Process
 import random
 from MAMEToolkit.sf_environment import Environment
 
 
-def run_env(env):
+def run_env(worker_id, roms_path):
+    env = Environment(f"env{worker_id}", roms_path)
     env.start()
     while True:
         move_action = random.randint(0, 8)
@@ -55,13 +56,11 @@ def run_env(env):
             env.next_round()
 
 
-def main():
-    workers = 8
-    # Environments must be created outside of the threads
-    roms_path = "roms/"  # Replace this with the path to your ROMs
-    envs = [Environment(f"env{i}", roms_path) for i in range(workers)]
-    threads = [Thread(target=run_env, args=(envs[i], )) for i in range(workers)]
-    [thread.start() for thread in threads]
+workers = 8
+# Environments must be created outside of the threads
+roms_path = "roms/"  # Replace this with the path to your ROMs
+threads = [Process(target=run_env, args=(i, roms_path)) for i in range(workers)]
+[thread.start() for thread in threads]
 ```
 
 ![](pics/hogwild3.gif "Hogwild Random Agents")
