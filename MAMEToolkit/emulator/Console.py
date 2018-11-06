@@ -59,19 +59,25 @@ class Console(object):
                 break
         return lines
 
-    def writeln(self, command, expect_output=False, timeout=0.5):
+    def writeln(self, command, expect_output=False, timeout=0.5, raiseError=True):
         self.process.stdin.write(command.encode("utf-8") + b'\n')
         self.process.stdin.flush()
         output = self.readAll(timeout=timeout)
 
         if expect_output and len(output) == 0:
             error = "Expected output but received nothing from emulator after '" + command + "'"
-            self.logger.error(error)
-            raise IOError(error)
+            if raiseError:
+                self.logger.error(error)
+                raise IOError(error)
+            else:
+                return None
         if not expect_output and len(output) > 0:
             error = "No output expected from command '" + command + "', but recieved: " + "\n".join(output)
-            self.logger.error(error)
-            raise IOError(error)
+            if raiseError:
+                self.logger.error(error)
+                raise IOError(error)
+            else:
+                return None
         if expect_output:
             return output
 

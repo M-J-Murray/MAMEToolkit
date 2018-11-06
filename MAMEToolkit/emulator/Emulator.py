@@ -85,14 +85,20 @@ class Emulator(object):
         self.console.writeln('mem = manager:machine().devices[":maincpu"].spaces["program"]')
         self.console.writeln('releaseQueue = {}')
 
-    def wait_for_resource_registration(self):
+    def wait_for_resource_registration(self, max_attempts=10):
         screen_registered = False
         program_registered = False
+        attempt = 0
         while not screen_registered or not program_registered:
             if not screen_registered:
-                screen_registered = self.console.writeln('print(manager:machine().screens[":screen"])', expect_output=True, timeout=3) is not "nil"
+                result = self.console.writeln('print(manager:machine().screens[":screen"])', expect_output=True, timeout=3, raiseError=False)
+                screen_registered = result is not None and result is not "nil"
             if not program_registered:
-                program_registered = self.console.writeln('print(manager:machine().devices[":maincpu"].spaces["program"])', expect_output=True, timeout=3) is not "nil"
+                result = self.console.writeln('print(manager:machine().devices[":maincpu"].spaces["program"])', expect_output=True, timeout=3, raiseError=False)
+                program_registered = result is not None and result is not "nil"
+            if attempt == max_attempts:
+                raise EnvironmentError("Failed to register MAME resources!")
+            attempt += 1
 
     # Gets the game screen width in pixels
     def setup_screen_width(self):
