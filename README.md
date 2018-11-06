@@ -3,6 +3,10 @@
 ## About
 This Python library has the to potential to train your reinforcement learning algorithm on almost any arcade game. It is currently available on Linux systems and works as a wrapper around [MAME](http://mamedev.org/). The toolkit allows your algorithm to step through gameplay while recieving the frame data and internal memory address values for tracking the games state, along with sending actions to interact with the game.
 
+## Requirements:
+- Operating system: Linux
+- Python version: 3.6+
+
 ## Installation
 You can use `pip` to install the library, just run:
 ```bash
