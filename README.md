@@ -92,7 +92,7 @@ roms_path = "roms/" # Replace this with the path to your ROMs
 game_id = "sfiii3n"
 run_cheat_debugger(roms_path, game_id)
 ```
-For information about using the debugger, see the Memory dump section of this tutorial [https://www.dorkbotpdx.org/blog/skinny/use_mames_debugger_to_reverse_engineer_and_extend_old_games]
+For information about using the debugger, see the Memory dump section of this tutorial [http://bzztbomb.com/blog/2013/03/23/use-mames-debugger-to-reverse-engineer-and-extend-old-games/]
 
 
 Once you have determined the memory addresses you wish to track you can start the emulation using:
