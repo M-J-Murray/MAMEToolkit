@@ -4,8 +4,11 @@
 This Python library has the to potential to train your reinforcement learning algorithm on almost any arcade game. It is currently available on Linux systems and works as a wrapper around [MAME](http://mamedev.org/). The toolkit allows your algorithm to step through gameplay while recieving the frame data and internal memory address values for tracking the games state, along with sending actions to interact with the game.
 
 ## Requirements:
-- Operating system: Linux
+- Operating system: Ubuntu 18.04 (this might work on older versions of ubuntu, although it has not been tested.)
+- Instruction set: amd64 (this includes intel CPUs)
 - Python version: 3.6+
+
+**NOTE**: If you are using a different linux distribution or a CPU with a different instruction set, see section [Compiling custom MAME](#Compiling-custom-MAME).
 
 ## Installation
 You can use `pip` to install the library, just run:
@@ -213,5 +216,48 @@ The following files are affected:
 
 **The modified MAME implementation can be found at [https://github.com/M-J-Murray/mame]**
 
+## Compiling custom MAME
+Unfortunately this library doesn't work with every single OS or CPU instruction set. This is because it uses a custom precompiled instance of MAME that is specific to the OS and CPU it was compiled on.
+However, if you are using a different linux distribution or instruction set, this does not mean you are out of options, it just means that your path to using this library is a little more complicated.
+Your only remaining option is to compile the custom instance of MAME yourself. To achieve this you just need a linux distribution with a GUI. Other operating systems will not work, as the library relies heavily on linux fifo pipes.
 
+### Compilation steps
+To compile your own custom instance of MAME run the following commands in your terminal:
+```bash
+git clone git@github.com:M-J-Murray/mame.git
+cd mame
+make
+```
+This could take several hours depending on your computer.
 
+Once the compilation has completed you should have an executable file called `mame64`, or something along those lines.
+All you need to do now is rename said executable to `mame` and replace the precompiled MAME instance in your python MAMEToolkit directory with your new file.
+You should be able to find the MAMEToolkit directory by going to your python environment directory, and then going to `site-packages`.
+
+### Troubleshooting
+This section describes what to do if your `make` command fails with some kind of error message describing an incorrect/missing library.
+As different linux distributions implement different libraries by default it is likely that you will not have the correct libraries installed by default. These libraries will also need to be specific to your CPU instruction set.
+Writing all the library installation commands for all linux distributions and instruction sets would be extremely difficult, however, I can outline the libraries that MAME requires. The list is as follows:
+* libdl
+* librt
+* libSDL2-2.0
+* libpthread
+* libutil
+* libGL
+* libasound
+* libQt5Widgets
+* libQt5Gui
+* libQt5Core
+* libX11
+* libSDL2_ttf-2.0
+* libfontconfig
+* libstdc++
+* libm
+* libgcc_s
+* libc
+ 
+Your error message should indicate that at least one of these libraries is missing. To install said library you will need to look online and find out how to install/update the library for your relevant linux distribution and instruction set. 
+Use the following as a google search template: "{linux distribution} {CPU instruction set} install {missing library}"
+Just replace the curly brackets with the information relevant to you. Hopefully you should be able to find the relevant install command on a forum. If the missing library isn't available for your distro/cpu then the MAMEToolkit will not work for you.
+
+Once you have installed your library just run `make` again and it will continue where it left off, you will not lose your compilation progress.
