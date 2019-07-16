@@ -8,7 +8,7 @@ from MAMEToolkit.emulator.Console import Console
 def run_console(game_id, output_queue):
     console = None
     try:
-        console = Console("MAMEToolkit/emulator/mame/roms", game_id)
+        console = Console("/home/michael/dev/MAMEToolkit/MAMEToolkit/emulator/mame/roms", game_id)
         sleep(5)
         console.writeln('s = manager:machine().screens[":screen"]')
         output = console.writeln('print(s:width())', expect_output=True)

@@ -4,7 +4,9 @@ MAMEToolkit/emulator/mame/roms/sfiii3n.zip
 MAMEToolkit/emulator/mame/mame
 MAMEToolkit/emulator/mame/nvram
 MAMEToolkit/emulator/mame/cfg
+MAMEToolkit/emulator/mame/history
 build
 dist
 MAMEToolkit-**
 MAMEToolkit.egg-info
+temp

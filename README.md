@@ -110,7 +110,7 @@ memory_addresses = {
         "healthP2": Address('0x020691A3', 's8')
     }
     
-emulator = Emulator("env1", roms_path, "sfiii3n", memory_addresses)
+emulator = Emulator("env1", roms_path, game_id, memory_addresses)
 ```
 This will immediately start the emulation and halt it when the toolkit has linked to the emulator process. 
 

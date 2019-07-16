@@ -5,6 +5,7 @@ from queue import Queue as DefaultQueue
 
 from MAMEToolkit.emulator.pipes.DataPipe import DataPipe
 from MAMEToolkit.emulator.Address import Address
+from MAMEToolkit.emulator.BitmapFormat import BitmapFormat
 from multiprocessing import set_start_method, Process, Queue as MPQueue
 
 
@@ -28,9 +29,10 @@ def close_pipes(pipe1, pipe2):
 
 
 def run_read(output_pipe):
+    bitmap_format = BitmapFormat.RGB32
     addresses = {"test1": Address("0x00000000", "u8"), "test2": Address("0x00000001", "u16")}
     screen_dims = {"width": 1, "height": 1}
-    data_pipe = DataPipe("env1", screen_dims, addresses, "../mame/pipes")
+    data_pipe = DataPipe("env1", screen_dims, bitmap_format, addresses, "../mame/pipes")
     write_pipe = setup_data_pipe(data_pipe)
     write_pipe.write("1+2+abc\n")
     write_pipe.flush()
@@ -54,12 +56,28 @@ class MockConsole(object):
 
 class DataPipeTest(unittest.TestCase):
 
+    def test_empty_lua_string(self):
+        data_pipe, write_pipe = [None] * 2
+        try:
+            bitmap_format = BitmapFormat.RGB32
+            addresses = {}
+            screen_dims = {"width": 1, "height": 1}
+            data_pipe = DataPipe("env1", screen_dims, bitmap_format, addresses, "../mame/pipes")
+            write_pipe = setup_data_pipe(data_pipe)
+            write_pipe.write("1+2+abc\n")
+            write_pipe.flush()
+
+            assert_that(data_pipe.get_lua_string(), equal_to('dataPipe:write(s:bitmap_binary().."\\n"); dataPipe:flush(); '))
+        finally:
+            close_pipes(data_pipe, write_pipe)
+
     def test_lua_string(self):
         data_pipe, write_pipe = [None] * 2
         try:
+            bitmap_format = BitmapFormat.RGB32
             addresses = {"test1": Address("0x00000000", "u8"), "test2": Address("0x00000001", "u16")}
             screen_dims = {"width": 1, "height": 1}
-            data_pipe = DataPipe("env1", screen_dims, addresses, "../mame/pipes")
+            data_pipe = DataPipe("env1", screen_dims, bitmap_format, addresses, "../mame/pipes")
             write_pipe = setup_data_pipe(data_pipe)
             write_pipe.write("1+2+abc\n")
             write_pipe.flush()
@@ -71,9 +89,10 @@ class DataPipeTest(unittest.TestCase):
     def test_read_data(self):
         data_pipe, write_pipe = [None] * 2
         try:
+            bitmap_format = BitmapFormat.RGB32
             addresses = {"test1": Address("0x00000000", "u8"), "test2": Address("0x00000001", "u16")}
             screen_dims = {"width": 1, "height": 1}
-            data_pipe = DataPipe("env1", screen_dims, addresses, "../mame/pipes")
+            data_pipe = DataPipe("env1", screen_dims, bitmap_format, addresses, "../mame/pipes")
             write_pipe = setup_data_pipe(data_pipe)
             write_pipe.write("1+2+abc\n")
             write_pipe.flush()

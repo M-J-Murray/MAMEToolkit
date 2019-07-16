@@ -43,8 +43,8 @@ def set_difficulty(frame_ratio, difficulty):
 
 def start_game(frame_ratio):
     return [
-        {"wait": 180, "actions": [Actions.COIN_P1]},
-        {"wait": 1, "actions": [Actions.COIN_P1]},
+        {"wait": int(300/frame_ratio), "actions": [Actions.COIN_P1]},
+        {"wait": int(10/frame_ratio), "actions": [Actions.COIN_P1]},
         {"wait": int(60/frame_ratio), "actions": [Actions.P1_START]},
         {"wait": int(80/frame_ratio), "actions": [Actions.P1_LEFT, Actions.P1_JPUNCH]},
         {"wait": int(60/frame_ratio), "actions": [Actions.P1_JPUNCH]},
@@ -61,8 +61,8 @@ def new_game(frame_ratio):
     return [{"wait": 0, "actions": [Actions.SERVICE]},
               {"wait": int(30 / frame_ratio), "actions": [Actions.P1_UP]},
               {"wait": int(30 / frame_ratio), "actions": [Actions.P1_JPUNCH]},
-              {"wait": 180, "actions": [Actions.COIN_P1]},
-              {"wait": 1, "actions": [Actions.COIN_P1]},
+              {"wait": int(300 / frame_ratio), "actions": [Actions.COIN_P1]},
+              {"wait": int(10 / frame_ratio), "actions": [Actions.COIN_P1]},
               {"wait": int(60 / frame_ratio), "actions": [Actions.P1_START]},
               {"wait": int(80 / frame_ratio), "actions": [Actions.P1_LEFT, Actions.P1_JPUNCH]},
               {"wait": int(60 / frame_ratio), "actions": [Actions.P1_JPUNCH]},
