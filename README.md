@@ -231,7 +231,7 @@ make
 This could take several hours depending on your computer.
 
 Once the compilation has completed you should have an executable file called `mame64`, or something along those lines.
-All you need to do now is rename said executable to `mame` and replace the precompiled MAME instance in your python MAMEToolkit directory with your new file.
+Now you can either use the binary_path keyword argument on your emulator method calls to point at your custom binary, or you can rename said executable to `mame` and replace the precompiled MAME instance in your python MAMEToolkit directory with your new file.
 You should be able to find the MAMEToolkit directory by going to your python environment directory, and then going to `site-packages`.
 
 ### Troubleshooting

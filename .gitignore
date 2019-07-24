@@ -1,10 +1,10 @@
 .idea
 *__pycache__*
 MAMEToolkit/emulator/mame/roms/sfiii3n.zip
-MAMEToolkit/emulator/mame/mame
 MAMEToolkit/emulator/mame/nvram
 MAMEToolkit/emulator/mame/cfg
 MAMEToolkit/emulator/mame/history
+binary/
 build
 dist
 MAMEToolkit-**

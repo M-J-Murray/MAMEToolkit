@@ -12,8 +12,8 @@ def actions_to_string(actions):
     return '+'.join(action_strings)
 
 
-def list_actions(roms_path, game_id):
-    console = Console(roms_path, game_id)
+def list_actions(roms_path, game_id, binary_path=None):
+    console = Console(roms_path, game_id, binary_path=binary_path)
     console.writeln('iop = manager:machine():ioport()')
     actions = []
     ports = console.writeln("for k,v in pairs(iop.ports) do print(k) end", expect_output=True, timeout=0.5)
@@ -29,12 +29,12 @@ def list_actions(roms_path, game_id):
     return actions
 
 
-def see_games():
-    Emulator("env1", "", "", {})
+def see_games(binary_path=None):
+    Emulator("env1", "", "", {}, binary_path=binary_path)
 
 
-def run_cheat_debugger(roms_path, game_id):
-    Console(roms_path, game_id, cheat_debugger=True, render=True, throttle=True, debug=True)
+def run_cheat_debugger(roms_path, game_id, binary_path=None):
+    Console(roms_path, game_id, cheat_debugger=True, render=True, throttle=True, debug=True, binary_path=binary_path)
 
 
 # An interface for using the Lua engine console functionality
@@ -45,12 +45,12 @@ class Emulator(object):
     # memory_addresses - The internal memory addresses of the game which this class will return the value of at every time step
     # frame_ratio - the ratio of frames that will be returned, 3 means 1 out of every 3 frames will be returned. Note that his also effects how often memory addresses are read and actions are sent
     # See console for render, throttle & debug
-    def __init__(self, env_id, roms_path, game_id, memory_addresses, frame_ratio=3, render=True, throttle=False, frame_skip=0, debug=False):
+    def __init__(self, env_id, roms_path, game_id, memory_addresses, frame_ratio=3, render=True, throttle=False, frame_skip=0, debug=False, binary_path=None):
         self.memory_addresses = memory_addresses
         self.frame_ratio = frame_ratio
 
         # setup lua engine
-        self.console = Console(roms_path, game_id, render=render, throttle=throttle, frame_skip=frame_skip, debug=debug)
+        self.console = Console(roms_path, game_id, render=render, throttle=throttle, frame_skip=frame_skip, debug=debug, binary_path=binary_path)
         atexit.register(self.close)
         self.wait_for_resource_registration()
         self.create_lua_variables()

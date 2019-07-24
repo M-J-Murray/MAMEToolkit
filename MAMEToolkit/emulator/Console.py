@@ -14,10 +14,16 @@ class Console(object):
     # render is for displaying the frames to the emulator window, disabling it has little to no effect
     # throttle enabled will run any game at the intended gameplay speed, disabling it will run the game as fast as the computer can handle
     # debug enabled will print everything that comes out of the Lua engine console
-    def __init__(self, roms_path, game_id, cheat_debugger=False, render=True, throttle=False, frame_skip=0, debug=False):
+    def __init__(self, roms_path, game_id, cheat_debugger=False, render=True, throttle=False, frame_skip=0, debug=False, binary_path=None):
         self.logger = logging.getLogger("Console")
 
-        command = f"exec ./mame -rompath '{str(Path(roms_path).absolute())}' -pluginspath plugins -skip_gameinfo -sound none -window -nomaximize -console "+game_id
+        mame_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "mame")
+        if binary_path is None:
+            binary_path = "./mame"
+        else:
+            binary_path = str(Path(binary_path).absolute())
+
+        command = f"exec {binary_path} -rompath '{str(Path(roms_path).absolute())}' -pluginspath plugins -skip_gameinfo -sound none -window -nomaximize -console "+game_id
         if not render:
             command += " -video none"
 
@@ -29,8 +35,7 @@ class Console(object):
         command += " -frameskip "+str(frame_skip)
 
         # Start lua console
-        script_path = os.path.dirname(os.path.abspath(__file__))
-        self.process = Popen(command, cwd=f"{script_path}/mame", shell=True, stdin=PIPE, stdout=PIPE)
+        self.process = Popen(command, cwd=mame_path, shell=True, stdin=PIPE, stdout=PIPE)
 
         # Start read queues
         self.stdout_queue = queue.Queue()
