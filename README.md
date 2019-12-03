@@ -1,7 +1,7 @@
 # The MAME RL Algorithm Training Toolkit
 
 ## About
-This Python library has the to potential to train your reinforcement learning algorithm on almost any arcade game. It is currently available on Linux systems and works as a wrapper around [MAME](http://mamedev.org/). The toolkit allows your algorithm to step through gameplay while recieving the frame data and internal memory address values for tracking the games state, along with sending actions to interact with the game.
+This Python library will allow you to train your reinforcement learning algorithm on almost any arcade game. It is currently available on Linux systems and works as a wrapper around [MAME](http://mamedev.org/). The toolkit allows your algorithm to step through gameplay while recieving the frame data and internal memory address values for tracking the games state, along with sending actions to interact with the game.
 
 ## Requirements:
 - Operating system: Ubuntu 18.04 (this might work on older versions of ubuntu, although it has not been tested.)

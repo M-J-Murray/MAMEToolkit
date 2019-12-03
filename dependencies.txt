@@ -1,0 +1,9 @@
+libSDL2-2.0.so.0
+libasound.so.2
+libQt5Widgets.so.5
+libQt5Gui.so.5
+libQt5Core.so.5
+libXi.so.6
+libSDL2_ttf-2.0.so.0
+libfontconfig.so.1
+libc.so.6

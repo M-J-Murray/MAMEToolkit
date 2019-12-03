@@ -10,3 +10,6 @@ dist
 MAMEToolkit-**
 MAMEToolkit.egg-info
 temp
+wheelhouse
+mame
+profile.md
