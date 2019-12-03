@@ -4,11 +4,11 @@
 This Python library will allow you to train your reinforcement learning algorithm on almost any arcade game. It is currently available on Linux systems and works as a wrapper around [MAME](http://mamedev.org/). The toolkit allows your algorithm to step through gameplay while recieving the frame data and internal memory address values for tracking the games state, along with sending actions to interact with the game.
 
 ## Requirements:
-- Operating system: Ubuntu 18.04 (this might work on older versions of ubuntu, although it has not been tested.)
+- Operating system: Vast majority of desktop and server Linux distributions
 - Instruction set: amd64 (this includes intel CPUs)
 - Python version: 3.6+
 
-**NOTE**: If you are using a different linux distribution or a CPU with a different instruction set, see section [Compiling custom MAME](#Compiling-custom-MAME).
+**NOTE**: If you are using an uncommon linux distribution or a CPU with a different instruction set, see section [Compiling custom MAME](#Compiling-custom-MAME).
 
 ## Installation
 You can use `pip` to install the library, just run:
@@ -226,11 +226,11 @@ To compile your own custom instance of MAME run the following commands in your t
 ```bash
 git clone git@github.com:M-J-Murray/mame.git
 cd mame
-make
+make SUBTARGET=arcade -j4
 ```
-This could take several hours depending on your computer.
+Adjust `j` to match the amount of virtual cores your CPU supports, as this could take several hours depending on your computer.
 
-Once the compilation has completed you should have an executable file called `mame64`, or something along those lines.
+Once the compilation has completed you should have an executable file called `mamearcade64`, or something along those lines.
 Now you can either use the binary_path keyword argument on your emulator method calls to point at your custom binary, or you can rename said executable to `mame` and replace the precompiled MAME instance in your python MAMEToolkit directory with your new file.
 You should be able to find the MAMEToolkit directory by going to your python environment directory, and then going to `site-packages`.
 
