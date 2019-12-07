@@ -1,9 +1,9 @@
 .idea
 *__pycache__*
-MAMEToolkit/emulator/mame/roms/sfiii3n.zip
-MAMEToolkit/emulator/mame/nvram
-MAMEToolkit/emulator/mame/cfg
-MAMEToolkit/emulator/mame/history
+src/MAMEToolkit/emulator/mame/roms/sfiii3n.zip
+src/MAMEToolkit/emulator/mame/nvram
+src/MAMEToolkit/emulator/mame/cfg
+src/MAMEToolkit/emulator/mame/history
 binary/
 build
 dist
@@ -13,3 +13,4 @@ temp
 wheelhouse
 mame
 profile.md
+venv

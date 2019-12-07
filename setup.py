@@ -22,7 +22,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name="MAMEToolkit",
-    version="1.0.3",
+    version="1.0.4",
     author="Michael Murray",
     author_email="m.j.murray123@gmail.com",
     description="A library to train your RL algorithms against MAME arcade games on Linux",
@@ -30,8 +30,8 @@ setup(
     long_description_content_type="text/markdown",
     url="https://github.com/M-J-Murray/MAMEToolkit",
     zip_safe=False,
-    packages=find_packages("MAMEToolkit", exclude=['MAMEToolkit/emulator/mame/roms']),
-    package_dir={"": "MAMEToolkit"},
+    packages=find_packages("src", exclude=['MAMEToolkit/emulator/mame/roms']),
+    package_dir={"": "src"},
     include_package_data=True,
     classifiers=[
         "Programming Language :: Python :: 3",

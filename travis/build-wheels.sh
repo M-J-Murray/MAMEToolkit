@@ -33,7 +33,6 @@ make SUBTARGET=arcade -j4
 mkdir -p /io/binary
 cp mamearcade64 /io/binary/mame
 
-
 # Compile wheels
 for PYBIN in /opt/python/cp3*/bin; do
     "${PYBIN}/pip" install -r /io/requirements.txt

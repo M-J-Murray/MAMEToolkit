@@ -78,7 +78,7 @@ threads = [Process(target=run_env, args=(i, roms_path)) for i in range(workers)]
 To create an emulation of the game you must first have the ROM for the game you are emulating and know the game ID used by MAME, for example for this version of street fighter it is 'sfiii3n'. 
 The id of your game can be found by running:
 ```python
-from MAMEToolkit.emulator import see_games
+from src.MAMEToolkit.emulator import see_games
 see_games()
 ```
 This will bring up the MAME emulator. You can search through the list of games to find the one you want. The id of the game is always in brackets at the end of the game title.
@@ -90,7 +90,7 @@ The internal memory states of a game can be tracked using the [MAME Cheat Debugg
 
 The cheat debugger can be run using the following:
 ```python
-from MAMEToolkit.emulator import run_cheat_debugger
+from src.MAMEToolkit.emulator import run_cheat_debugger
 roms_path = "roms/" # Replace this with the path to your ROMs
 game_id = "sfiii3n"
 run_cheat_debugger(roms_path, game_id)
@@ -100,8 +100,8 @@ For information about using the debugger, see the Memory dump section of the fol
 
 Once you have determined the memory addresses you wish to track you can start the emulation using:
 ```python
-from MAMEToolkit.emulator import Emulator
-from MAMEToolkit.emulator import Address
+from src.MAMEToolkit.emulator import Emulator
+from src.MAMEToolkit.emulator import Address
 
 roms_path = "roms/"  # Replace this with the path to your ROMs
 game_id = "sfiii3n"
@@ -134,14 +134,14 @@ The step function returns the frame data as a NumPy matrix, along with all of th
 **Sending inputs**
 To send actions to the emulator you also need to determine which input ports and fields the game supports. For example, with street fighter to insert a coin the following code is required:
 ```python
-from MAMEToolkit.emulator import Action
+from src.MAMEToolkit.emulator import Action
 
 insert_coin = Action(':INPUTS', 'Coin 1')
 data = emulator.step([insert_coin])
 ```
 To identify which ports are availble use the list actions command:
 ```python
-from MAMEToolkit.emulator import list_actions
+from src.MAMEToolkit.emulator import list_actions
 
 roms_path = "roms/"  # Replace this with the path to your ROMs
 game_id = "sfiii3n"
@@ -185,7 +185,7 @@ There is also the problem of transitioning games between non-learnable gameplay 
 
 The emulator class also has a frame_ratio argument which can be used for adjusting the frame rate seen by your algorithm. By default MAME generates frames at 60 frames per second, however, this may be too many frames for your algorithm. The toolkit by default will use a frame_ratio of 3, which means that 1 in 3 frames are sent through the toolkit, this converts the frame rate to 20 frames per second. Using a higher frame_ratio also increases the performance of the toolkit.
 ```Python
-from MAMEToolkit.emulator import Emulator
+from src.MAMEToolkit.emulator import Emulator
 
 emulator = Emulator(roms_path, game_id, memory_addresses, frame_ratio=3)
 ```
