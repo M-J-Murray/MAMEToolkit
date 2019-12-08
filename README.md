@@ -21,7 +21,7 @@ pip install MAMEToolkit
 There are some free ROMs available at: [https://www.mamedev.org/roms/]
 
 ## Sponsorship & Future Development :heart:
-I have just joined the [Github Sponsors](https://github.com/sponsors/M-J-Murray) program and would appreciate any donations towards future development on this project. There are a plans to extend and improve upon this library, and with your help we can make this happen. If you would like to show your appreciation or request a new game environment/feature be added, feel free to go to [https://github.com/sponsors/M-J-Murray] and become a sponsor today!
+I have just joined the [Github Sponsors](https://github.com/sponsors/M-J-Murray) program and would appreciate any donations towards future development on this project. There are a plans to extend and improve upon this library, and with your help we can make this happen. If you would like to show your appreciation or request a new game environment/feature be added, feel free to go to https://github.com/sponsors/M-J-Murray and become a sponsor today!
 
 The sponsor page also outlines future plans and optimisations which will help improve the library for everyone.
 
