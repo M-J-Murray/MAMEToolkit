@@ -1,8 +1,11 @@
 import unittest
 from hamcrest import *
 from time import sleep
-from multiprocessing import set_start_method, Process, Queue
+from multiprocessing import set_start_method, get_start_method, Process, Queue
 from src.MAMEToolkit.emulator.Console import Console
+
+import os
+del os.environ["FONTCONFIG_PATH"]
 
 
 def run_console(game_id, output_queue):
@@ -32,7 +35,8 @@ class ConsoleTest(unittest.TestCase):
             console.close()
 
     def test_multiprocessing(self):
-        set_start_method("spawn")
+        if get_start_method(True) != "spawn":
+            set_start_method("spawn")
         workers = 10
         game_id = "sfiii3n"
         output_queue = Queue()

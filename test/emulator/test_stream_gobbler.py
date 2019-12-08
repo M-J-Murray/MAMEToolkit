@@ -1,7 +1,7 @@
 import unittest
 from hamcrest import *
-from src.MAMEToolkit.emulator import StreamGobbler
-from multiprocessing import set_start_method, Process, Queue
+from src.MAMEToolkit.emulator.StreamGobbler import StreamGobbler
+from multiprocessing import get_start_method, set_start_method, Process, Queue
 import queue
 
 
@@ -11,8 +11,8 @@ def run_gobbler(lines, output_queue):
     gobbler = None
     try:
         gobbler = StreamGobbler(pipe, line_queue)
-        gobbler.start()
         gobbler.wait_for_cursor()
+        gobbler.start()
         for _ in range(3):
             output_queue.put(line_queue.get(timeout=0.1))
     finally:
@@ -42,16 +42,17 @@ class StreamGobblerTest(unittest.TestCase):
         line_queue = queue.Queue()
         gobbler = None
         try:
-            gobbler = StreamGobbler(pipe, line_queue)
-            gobbler.start()
+            gobbler = StreamGobbler(pipe, line_queue, debug=True)
             gobbler.wait_for_cursor()
+            gobbler.start()
             for i in range(3):
                 assert_that(line_queue.get(timeout=0.1), is_(equal_to(lines[i][:-1])))
         finally:
             gobbler.stop()
 
     def test_multiprocessing(self):
-        set_start_method("spawn")
+        if get_start_method(True) != "spawn":
+            set_start_method("spawn")
         workers = 2
         lines = [b"test1\n", b"test2\n", b"test3\n"]
         output_queue = Queue()

@@ -6,7 +6,10 @@ from queue import Queue as DefaultQueue
 from src.MAMEToolkit.emulator.pipes import DataPipe
 from src.MAMEToolkit.emulator import Address
 from src.MAMEToolkit.emulator.BitmapFormat import BitmapFormat
-from multiprocessing import set_start_method, Process, Queue as MPQueue
+from multiprocessing import get_start_method, set_start_method, Process, Queue as MPQueue
+
+import os
+os.chdir(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
 
 
 def setup_data_pipe(data_pipe):
@@ -32,7 +35,7 @@ def run_read(output_pipe):
     bitmap_format = BitmapFormat.RGB32
     addresses = {"test1": Address("0x00000000", "u8"), "test2": Address("0x00000001", "u16")}
     screen_dims = {"width": 1, "height": 1}
-    data_pipe = DataPipe("env1", screen_dims, bitmap_format, addresses, "../../../src/MAMEToolkit/emulator/mame/pipes/")
+    data_pipe = DataPipe("env1", screen_dims, bitmap_format, addresses, "mame/pipes/")
     write_pipe = setup_data_pipe(data_pipe)
     write_pipe.write("1+2+abc\n")
     write_pipe.flush()
@@ -56,13 +59,24 @@ class MockConsole(object):
 
 class DataPipeTest(unittest.TestCase):
 
+    @classmethod
+    def setUpClass(cls):
+        cls.tearDownClass()
+
+    @classmethod
+    def tearDownClass(cls):
+        files = os.listdir("mame/pipes/")
+        if len(files) > 0:
+            for f in files:
+                os.remove("mame/pipes/"+f)
+
     def test_empty_lua_string(self):
-        data_pipe, write_pipe = [None] * 2
+        data_pipe, write_pipe = [None, None]
         try:
             bitmap_format = BitmapFormat.RGB32
             addresses = {}
             screen_dims = {"width": 1, "height": 1}
-            data_pipe = DataPipe("env1", screen_dims, bitmap_format, addresses, "../mame/pipes")
+            data_pipe = DataPipe("env1", screen_dims, bitmap_format, addresses, "mame/pipes")
             write_pipe = setup_data_pipe(data_pipe)
             write_pipe.write("1+2+abc\n")
             write_pipe.flush()
@@ -72,12 +86,12 @@ class DataPipeTest(unittest.TestCase):
             close_pipes(data_pipe, write_pipe)
 
     def test_lua_string(self):
-        data_pipe, write_pipe = [None] * 2
+        data_pipe, write_pipe = [None, None]
         try:
             bitmap_format = BitmapFormat.RGB32
             addresses = {"test1": Address("0x00000000", "u8"), "test2": Address("0x00000001", "u16")}
             screen_dims = {"width": 1, "height": 1}
-            data_pipe = DataPipe("env1", screen_dims, bitmap_format, addresses, "../mame/pipes")
+            data_pipe = DataPipe("env1", screen_dims, bitmap_format, addresses, "mame/pipes")
             write_pipe = setup_data_pipe(data_pipe)
             write_pipe.write("1+2+abc\n")
             write_pipe.flush()
@@ -87,12 +101,12 @@ class DataPipeTest(unittest.TestCase):
             close_pipes(data_pipe, write_pipe)
 
     def test_read_data(self):
-        data_pipe, write_pipe = [None] * 2
+        data_pipe, write_pipe = [None, None]
         try:
             bitmap_format = BitmapFormat.RGB32
             addresses = {"test1": Address("0x00000000", "u8"), "test2": Address("0x00000001", "u16")}
             screen_dims = {"width": 1, "height": 1}
-            data_pipe = DataPipe("env1", screen_dims, bitmap_format, addresses, "../mame/pipes")
+            data_pipe = DataPipe("env1", screen_dims, bitmap_format, addresses, "mame/pipes")
             write_pipe = setup_data_pipe(data_pipe)
             write_pipe.write("1+2+abc\n")
             write_pipe.flush()
@@ -108,7 +122,8 @@ class DataPipeTest(unittest.TestCase):
             close_pipes(data_pipe, write_pipe)
 
     def test_read_data_multiprocessing(self):
-        set_start_method("spawn")
+        if get_start_method(True) != "spawn":
+            set_start_method("spawn")
         workers = 1
         output_queue = MPQueue()
         processes = [Process(target=run_read, args=[output_queue]) for i in range(workers)]

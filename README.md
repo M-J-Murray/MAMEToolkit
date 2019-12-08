@@ -6,7 +6,7 @@ This Python library will allow you to train your reinforcement learning algorith
 ## Requirements:
 - Operating system: Vast majority of desktop and server Linux distributions
 - Instruction set: amd64 (this includes intel CPUs)
-- Python version: 3.6+
+- Python version: 3.4 or greater
 
 **NOTE**: If you are using an uncommon linux distribution or a CPU with a different instruction set, see section [Compiling custom MAME](#Compiling-custom-MAME).
 
@@ -19,6 +19,12 @@ pip install MAMEToolkit
 **DISCLAIMER: We are unable to provide you with any game ROMs. It is the users own legal responsibility to acquire a game ROM for emulation. This library should only be used for non-commercial research purposes.**
 
 There are some free ROMs available at: [https://www.mamedev.org/roms/]
+
+## Sponsorship & Future Development :heart:
+I have just joined the [Github Sponsors](https://github.com/sponsors/M-J-Murray) program and would appreciate any donations towards future development on this project. There are a plans to extend and improve upon this library, and with your help we can make this happen. If you would like to show your appreciation or request a new game environment/feature be added, feel free to go to [https://github.com/sponsors/M-J-Murray] and become a sponsor today!
+
+The sponsor page also outlines future plans and optimisations which will help improve the library for everyone.
+
 
 ## Street Fighter Random Agent Demo
 The toolkit has currently been applied to Street Fighter III Third Strike: Fight for the Future (Japan 990608, NO CD), but can modified for any game available on MAME. The following demonstrates how a random agent can be written for a street fighter environment.
@@ -190,6 +196,18 @@ from src.MAMEToolkit.emulator import Emulator
 emulator = Emulator(roms_path, game_id, memory_addresses, frame_ratio=3)
 ```
 
+## Running The Library Without A Screen / On A Linux Server
+If you are running a linux server or a docker instance then you will need to add some extra code to your python script to enable MAME to run.
+To achieve this we will be using the [Xvfb library](https://en.wikipedia.org/wiki/Xvfb), which will simulate an instance of the X display server. 
+Simply install the `Xvfb` library for your relevant linux distro. Then add to the following two lines to the top of your maine Python script.
+```python
+import os
+os.system("Xvfb :0 -screen 0 800x600x16 +extension RANDR &")
+os.environ["DISPLAY"] = ":0"
+```
+This will simulate a 800x600 resolution screen with 16-bit colour. Feel free to change the parameters to suit your needs.
+
+
 ## Library Performance Benchmarks with PC Specs
 The development and testing of this toolkit have been completed on an 8-core AMD FX-8300 3.3GHz CPU along with a 3GB GeForce GTX 1060 GPU.
 With a single random agent, the street fighter environment can be run at 600%+ the normal gameplay speed. And For hogwild training with 8 random agents, the environment can be run at 300%+ the normal gameplay speed.
@@ -200,7 +218,7 @@ To ensure that the toolkit is able to train algorithms, a simple 5 layer ConvNet
 ![](pics/chart.png "ConvNet Results")
 
 ## MAME Changes
-The library works by acting as a wrapper around a modified MAME implementation.
+The library acts as a wrapper around a modified MAME implementation.
 The following changes were made:
 * Updated the lua console to allow for the retrieval of the format of frame data
 * Update the lua console to allow for the retrieval of the current frames data

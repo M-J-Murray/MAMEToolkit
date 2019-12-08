@@ -1,7 +1,7 @@
 import threading
 
 
-# A thread used for reading data from a thread
+# A thread used for reading data from a pipe
 # pipes don't have very good time out functionality, so this is used in combination with a queue
 class StreamGobbler(threading.Thread):
 

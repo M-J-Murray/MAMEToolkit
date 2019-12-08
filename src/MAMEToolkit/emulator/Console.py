@@ -5,6 +5,12 @@ from MAMEToolkit.emulator.StreamGobbler import StreamGobbler
 import queue
 import logging
 
+fonts_path = os.path.join(os.path.dirname(__file__), 'mame', 'fonts')
+if "FONTCONFIG_PATH" not in os.environ:
+    os.environ["FONTCONFIG_PATH"] = fonts_path
+elif fonts_path not in os.environ["FONTCONFIG_PATH"]:
+    os.environ["FONTCONFIG_PATH"] += ";" + fonts_path
+
 
 # A class for starting the MAME emulator, and communicating with the Lua engine console
 class Console(object):
@@ -14,7 +20,7 @@ class Console(object):
     # render is for displaying the frames to the emulator window, disabling it has little to no effect
     # throttle enabled will run any game at the intended gameplay speed, disabling it will run the game as fast as the computer can handle
     # debug enabled will print everything that comes out of the Lua engine console
-    def __init__(self, roms_path, game_id, cheat_debugger=False, render=True, throttle=False, frame_skip=0, debug=False, binary_path=None):
+    def __init__(self, roms_path, game_id, cheat_debugger=False, render=True, throttle=False, frame_skip=0, sound=False, debug=False, binary_path=None):
         self.logger = logging.getLogger("Console")
 
         mame_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "mame")
@@ -23,7 +29,7 @@ class Console(object):
         else:
             binary_path = str(Path(binary_path).absolute())
 
-        command = f"exec {binary_path} -rompath '{str(Path(roms_path).absolute())}' -pluginspath plugins -skip_gameinfo -sound none -window -nomaximize -console "+game_id
+        command = f"exec {binary_path} -rompath '{str(Path(roms_path).absolute())}' -pluginspath plugins -skip_gameinfo -window -nomaximize -console "+game_id
         if not render:
             command += " -video none"
 
@@ -34,7 +40,11 @@ class Console(object):
             command += " -throttle"
         else:
             command += " -nothrottle"
+
         command += " -frameskip "+str(frame_skip)
+
+        if not sound:
+            command += " -sound none"
 
         # Start lua console
         self.process = Popen(command, cwd=mame_path, shell=True, stdin=PIPE, stdout=PIPE)

@@ -6,6 +6,9 @@ from src.MAMEToolkit.emulator import Address
 from multiprocessing import Process, Queue
 from time import sleep
 
+import os
+del os.environ["FONTCONFIG_PATH"]
+
 
 def run_emulator(env_id, roms_path, game_id, memory_addresses, output_queue):
     emulator = None

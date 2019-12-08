@@ -2,7 +2,7 @@ import unittest
 from hamcrest import *
 from threading import Thread
 from queue import Queue as DefaultQueue
-from multiprocessing import set_start_method, Process, Queue as MPQueue
+from multiprocessing import set_start_method, get_start_method, Process, Queue as MPQueue
 
 from src.MAMEToolkit.emulator.pipes import Pipe
 
@@ -40,7 +40,7 @@ def setup_all_pipes():
 
 
 def run_write(output_queue):
-    write_pipe, lua_read_pipe = [None] * 2
+    write_pipe, lua_read_pipe = [None, None]
     try:
         write_pipe = Pipe("env1", "write", 'w', "mame/pipes")
         lua_read_pipe = setup_pipe(write_pipe)
@@ -52,7 +52,7 @@ def run_write(output_queue):
 
 
 def run_read(output_queue):
-    read_pipe, lua_write_pipe = [None] * 2
+    read_pipe, lua_write_pipe = [None, None]
     try:
         read_pipe = Pipe("env1", "read", 'r', "mame/pipes")
         lua_write_pipe = setup_pipe(read_pipe)
@@ -82,10 +82,19 @@ class PipeTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        set_start_method("spawn")
+        if get_start_method(True) != "spawn":
+            set_start_method("spawn")
+        cls.tearDownClass()
+
+    @classmethod
+    def tearDownClass(cls):
+        files = os.listdir("mame/pipes/")
+        if len(files) > 0:
+            for f in files:
+                os.remove("mame/pipes/"+f)
 
     def test_write(self):
-        write_pipe, lua_read_pipe = [None] * 2
+        write_pipe, lua_read_pipe = [None, None]
         try:
             write_pipe = Pipe("env1", "write", 'w', "mame/pipes")
             lua_read_pipe = setup_pipe(write_pipe)
@@ -96,7 +105,7 @@ class PipeTest(unittest.TestCase):
             close_pipes(write_pipe, lua_read_pipe)
 
     def test_read(self):
-        read_pipe, lua_write_pipe = [None] * 2
+        read_pipe, lua_write_pipe = [None, None]
         try:
             read_pipe = Pipe("env1", "read", 'r', "mame/pipes")
             lua_write_pipe = setup_pipe(read_pipe)
@@ -108,7 +117,7 @@ class PipeTest(unittest.TestCase):
             close_pipes(read_pipe, lua_write_pipe)
 
     def test_readln_empty(self):
-        read_pipe, lua_write_pipe = [None] * 2
+        read_pipe, lua_write_pipe = [None, None]
         try:
             read_pipe = Pipe("env1", "read", 'r', "mame/pipes")
             lua_write_pipe = setup_pipe(read_pipe)
@@ -121,7 +130,7 @@ class PipeTest(unittest.TestCase):
             close_pipes(read_pipe, lua_write_pipe)
 
     def test_read_from_write_pipe(self):
-        write_pipe, lua_read_pipe = [None] * 2
+        write_pipe, lua_read_pipe = [None, None]
         try:
             write_pipe = Pipe("env1", "write", 'w', "mame/pipes")
             lua_read_pipe = setup_pipe(write_pipe)
@@ -135,7 +144,7 @@ class PipeTest(unittest.TestCase):
             close_pipes(write_pipe, lua_read_pipe)
 
     def test_write_to_read_pipe(self):
-        read_pipe, lua_write_pipe = [None] * 2
+        read_pipe, lua_write_pipe = [None, None]
         try:
             read_pipe = Pipe("env1", "read", 'r', "mame/pipes")
             lua_write_pipe = setup_pipe(read_pipe)
@@ -149,7 +158,7 @@ class PipeTest(unittest.TestCase):
             close_pipes(read_pipe, lua_write_pipe)
 
     def test_lua_string(self):
-        write_pipe, lua_read_pipe, read_pipe, lua_write_pipe = [None] * 4
+        write_pipe, lua_read_pipe, read_pipe, lua_write_pipe = [None, None, None, None]
         try:
             write_pipe, lua_read_pipe, read_pipe, lua_write_pipe = setup_all_pipes()
 

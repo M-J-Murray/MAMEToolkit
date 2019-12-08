@@ -45,12 +45,12 @@ class Emulator(object):
     # memory_addresses - The internal memory addresses of the game which this class will return the value of at every time step
     # frame_ratio - the ratio of frames that will be returned, 3 means 1 out of every 3 frames will be returned. Note that his also effects how often memory addresses are read and actions are sent
     # See console for render, throttle & debug
-    def __init__(self, env_id, roms_path, game_id, memory_addresses, frame_ratio=3, render=True, throttle=False, frame_skip=0, debug=False, binary_path=None):
+    def __init__(self, env_id, roms_path, game_id, memory_addresses, frame_ratio=3, render=True, throttle=False, frame_skip=0, sound=False, debug=False, binary_path=None):
         self.memory_addresses = memory_addresses
         self.frame_ratio = frame_ratio
 
         # setup lua engine
-        self.console = Console(roms_path, game_id, render=render, throttle=throttle, frame_skip=frame_skip, debug=debug, binary_path=binary_path)
+        self.console = Console(roms_path, game_id, render=render, throttle=throttle, frame_skip=frame_skip, sound=sound, debug=debug, binary_path=binary_path)
         atexit.register(self.close)
         self.wait_for_resource_registration()
         self.create_lua_variables()
