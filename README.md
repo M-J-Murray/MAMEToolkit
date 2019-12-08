@@ -193,13 +193,13 @@ The emulator class also has a frame_ratio argument which can be used for adjusti
 ```Python
 from src.MAMEToolkit.emulator import Emulator
 
-emulator = Emulator(roms_path, game_id, memory_addresses, frame_ratio=3)
+emulator = Emulator(env_id, roms_path, game_id, memory_addresses, frame_ratio=3)
 ```
 
 ## Running The Library Without A Screen / On A Linux Server
 If you are running a linux server or a docker instance then you will need to add some extra code to your python script to enable MAME to run.
 To achieve this we will be using the [Xvfb library](https://en.wikipedia.org/wiki/Xvfb), which will simulate an instance of the X display server. 
-Simply install the `Xvfb` library for your relevant linux distro. Then add to the following two lines to the top of your maine Python script.
+Simply install the `Xvfb` library for your relevant linux distro. Then add to the following two lines to the top of your main Python script.
 ```python
 import os
 os.system("Xvfb :0 -screen 0 800x600x16 +extension RANDR &")
