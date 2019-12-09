@@ -6,7 +6,7 @@ This Python library will allow you to train your reinforcement learning algorith
 ## Requirements:
 - Operating system: Vast majority of desktop and server Linux distributions
 - Instruction set: amd64 (this includes intel CPUs)
-- Python version: 3.4 or greater
+- Python version: 3.6 or greater
 
 **NOTE**: If you are using an uncommon linux distribution or a CPU with a different instruction set, see section [Compiling custom MAME](#Compiling-custom-MAME).
 
