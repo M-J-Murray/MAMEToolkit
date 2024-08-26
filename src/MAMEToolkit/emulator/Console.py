@@ -20,16 +20,12 @@ class Console(object):
     # render is for displaying the frames to the emulator window, disabling it has little to no effect
     # throttle enabled will run any game at the intended gameplay speed, disabling it will run the game as fast as the computer can handle
     # debug enabled will print everything that comes out of the Lua engine console
-    def __init__(self, roms_path, game_id, cheat_debugger=False, render=True, throttle=False, frame_skip=0, sound=False, debug=False, binary_path=None):
+    def __init__(self, mame_root, game_id, cheat_debugger=False, render=True, throttle=False, frame_skip=0, sound=False, debug=False, maximize=True):
         self.logger = logging.getLogger("Console")
 
-        mame_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "mame")
-        if binary_path is None:
-            binary_path = "./mame"
-        else:
-            binary_path = str(Path(binary_path).absolute())
-
-        command = f"exec {binary_path} -rompath '{str(Path(roms_path).absolute())}' -pluginspath plugins -skip_gameinfo -window -nomaximize -console "+game_id
+        mame_path = str(Path(mame_root).absolute())
+        
+        command = f"exec mame -rompath roms -pluginspath plugins -skip_gameinfo -window -nomaximize -console "+game_id
         if not render:
             command += " -video none"
 
@@ -40,6 +36,11 @@ class Console(object):
             command += " -throttle"
         else:
             command += " -nothrottle"
+
+        if maximize:
+            command += " -maximize"
+        else:
+            command += " -nomaximize"
 
         command += " -frameskip "+str(frame_skip)
 
@@ -60,6 +61,8 @@ class Console(object):
     # timeout determines how long the function will wait for an output if there is nothing immediately available
     def readln(self, timeout=0.5):
         line = self.stdout_queue.get(timeout=timeout)
+
+        # Strip LUA prompt from output.
         while len(line)>0 and line[0] == 27:
             line = line[19:]
         return line.decode("utf-8")
@@ -80,6 +83,10 @@ class Console(object):
         self.process.stdin.flush()
         output = self.readAll(timeout=timeout)
 
+        # Sometimes the input command is included in the output so we strip it.
+        if len(output) > 0 and output[0] == command:
+            del(output[0])
+
         if expect_output and len(output) == 0:
             error = "Expected output but received nothing from emulator after '" + command + "'"
             if raiseError:
@@ -88,7 +95,7 @@ class Console(object):
             else:
                 return None
         if not expect_output and len(output) > 0:
-            error = "No output expected from command '" + command + "', but recieved: " + "\n".join(output)
+            error = "No output expected from command '" + command + "', but recieved:" + str(output)
             if raiseError:
                 self.logger.error(error)
                 raise IOError(error)

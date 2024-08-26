@@ -7,14 +7,16 @@ from src.MAMEToolkit.emulator.Console import Console
 import os
 del os.environ["FONTCONFIG_PATH"]
 
+mame_root = os.environ["MAME_ROOT"]
+game_id = os.environ.get("GAME_ID", "sfiii3n")
 
 def run_console(game_id, output_queue):
     console = None
     try:
-        console = Console("/home/michael/dev/MAMEToolkit/src/MAMEToolkit/emulator/mame/roms", game_id, binary_path="../../binary/mame")
+        console = Console(mame_root, game_id)
         sleep(5)
-        console.writeln('s = manager:machine().screens[":screen"]')
-        output = console.writeln('print(s:width())', expect_output=True)
+        console.writeln('s = manager.machine.screens[":screen"]')
+        output = console.writeln('print(s.width)', expect_output=True)
         output_queue.put(output[0])
     finally:
         console.close()
@@ -23,13 +25,12 @@ def run_console(game_id, output_queue):
 class ConsoleTest(unittest.TestCase):
 
     def test_write_read(self):
-        game_id = "sfiii3n"
         console = None
         try:
-            console = Console("/home/michael/dev/MAMEToolkit/src/MAMEToolkit/emulator/mame/roms", game_id, binary_path="../../binary/mame")
+            console =  Console(mame_root, game_id)
             sleep(5)
-            console.writeln('s = manager:machine().screens[":screen"]')
-            output = console.writeln('print(s:width())', expect_output=True)
+            console.writeln('s = manager.machine.screens[":screen"]')
+            output = console.writeln('print(s.width)', expect_output=True)
             assert_that(output[0], equal_to("384"))
         finally:
             console.close()
@@ -38,7 +39,6 @@ class ConsoleTest(unittest.TestCase):
         if get_start_method(True) != "spawn":
             set_start_method("spawn")
         workers = 10
-        game_id = "sfiii3n"
         output_queue = Queue()
         processes = [Process(target=run_console, args=[game_id, output_queue]) for i in range(workers)]
         [process.start() for process in processes]

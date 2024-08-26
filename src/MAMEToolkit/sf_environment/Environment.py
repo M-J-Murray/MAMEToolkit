@@ -23,6 +23,10 @@ def setup_memory_addresses():
         "healthP2": Address('0x020691A2', 's16')
     }
 
+# Strips alpha channel from frame.
+def strip_alpha_channel(frame):
+    return frame[:,:,:3]
+
 
 # Converts and index (action) into the relevant movement action Enum, depending on the player
 def index_to_move_action(action):
@@ -62,12 +66,12 @@ class Environment(object):
     # difficulty - the difficult to be used in story mode gameplay
     # frame_ratio, frames_per_step - see Emulator class
     # render, throttle, debug - see Console class
-    def __init__(self, env_id, roms_path, difficulty=3, frame_ratio=3, frames_per_step=3, render=True, throttle=False, frame_skip=0, sound=False, debug=False, binary_path=None):
+    def __init__(self, env_id, mame_root, difficulty=3, frame_ratio=3, frames_per_step=3, render=True, throttle=False, frame_skip=0, sound=False, debug=False):
         self.difficulty = difficulty
         self.frame_ratio = frame_ratio
         self.frames_per_step = frames_per_step
         self.throttle = throttle
-        self.emu = Emulator(env_id, roms_path, "sfiii3n", setup_memory_addresses(), frame_ratio=frame_ratio, render=render, throttle=throttle, frame_skip=frame_skip, sound=sound, debug=debug, binary_path=binary_path)
+        self.emu = Emulator(env_id, mame_root, "sfiii3n", setup_memory_addresses(), frame_ratio=frame_ratio, render=render, throttle=throttle, frame_skip=frame_skip, sound=sound, debug=debug)
         self.started = False
         self.expected_health = {"P1": 0, "P2": 0}
         self.expected_wins = {"P1": 0, "P2": 0}
@@ -149,10 +153,10 @@ class Environment(object):
     def wait_for_continue(self):
         data = self.emu.step([])
         if self.frames_per_step == 1:
-            while data["frame"].sum() != 0:
+            while strip_alpha_channel(data["frame"]).sum() != 0:
                 data = self.emu.step([])
         else:
-            while data["frame"][0].sum() != 0:
+            while strip_alpha_channel(data["frame"])[0].sum() != 0:
                 data = self.emu.step([])
 
     # Steps the emulator along until the round is definitely over
@@ -177,10 +181,10 @@ class Environment(object):
     # Collects the specified amount of frames the agent requires before choosing an action
     def gather_frames(self, actions):
         data = self.sub_step(actions)
-        frames = [data["frame"]]
+        frames = [strip_alpha_channel(data["frame"])]
         for i in range(self.frames_per_step - 1):
             data = add_rewards(data, self.sub_step(actions))
-            frames.append(data["frame"])
+            frames.append(strip_alpha_channel(data["frame"]))
         data["frame"] = frames[0] if self.frames_per_step == 1 else frames
         return data
 
@@ -188,7 +192,6 @@ class Environment(object):
     # Takes the data returned from the step and updates book keeping variables
     def sub_step(self, actions):
         data = self.emu.step([action.value for action in actions])
-
         p1_diff = (self.expected_health["P1"] - data["healthP1"])
         p2_diff = (self.expected_health["P2"] - data["healthP2"])
         self.expected_health = {"P1": data["healthP1"], "P2": data["healthP2"]}
@@ -215,7 +218,7 @@ class Environment(object):
                 raise EnvironmentError("Attempted to step while characters are not fighting")
         else:
             raise EnvironmentError("Start must be called before stepping")
-
+    
     # Safely closes emulator
     def close(self):
         self.emu.close()
